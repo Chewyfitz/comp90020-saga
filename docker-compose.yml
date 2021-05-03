@@ -6,8 +6,6 @@ services:
       - "5000:5000"
     volumes:
       - ./api:/code
-    environment:
-      - FLASK_APP=run.py
     links:
       - flight
       - front-end
@@ -17,14 +15,14 @@ services:
   front-end:
     build: ./front-end
     ports:
-      - "8080:8080"
+      - "8080:5000"
     volumes:
       - ./front-end:/code
 
   flight:
     build: ./flight
     ports:
-      - "5001:5001"
+      - "5001:5000"
     volumes:
       - ./flight:/code
     links:
@@ -33,7 +31,7 @@ services:
   hotel:
     build: ./hotel
     ports:
-      - "5002:5002"
+      - "5002:5000"
     volumes:
       - ./hotel:/code
     links:
@@ -42,7 +40,7 @@ services:
   payment:
     build: ./payment
     ports:
-      - "5003:5003"
+      - "5003:5000"
     volumes:
       - ./front-end:/code
     links:
