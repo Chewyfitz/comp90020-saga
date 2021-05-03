@@ -1,0 +1,56 @@
+version: "3.9"
+services:
+  api:
+    build: ./api
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./api:/code
+    environment:
+      - FLASK_APP=run.py
+    links:
+      - flight
+      - front-end
+      - hotel
+      - payment
+
+  front-end:
+    build: ./front-end
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./front-end:/code
+
+  flight:
+    build: ./flight
+    ports:
+      - "5001:5001"
+    volumes:
+      - ./flight:/code
+    links:
+      - couch
+
+  hotel:
+    build: ./hotel
+    ports:
+      - "5002:5002"
+    volumes:
+      - ./hotel:/code
+    links:
+      - couch
+
+  payment:
+    build: ./payment
+    ports:
+      - "5003:5003"
+    volumes:
+      - ./front-end:/code
+    links:
+      - couch
+
+  couch:
+    image: couchdb
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=password
+    command: ["sh", "-c", "/opt/couchdb/bin/couchdb & { sleep 3 ; curl -X PUT http://127.0.0.1:5986/_users ; curl -X PUT http://127.0.0.1:5986/_replicator ; curl -X PUT http://127.0.0.1:5986/_global_changes ; fg ; }"]
