@@ -4,7 +4,7 @@ import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import ServicePanel from './table';
 import DatePickers from './datePicker';
-import InfiniteLoadingGrid from "./rowPicker";
+import DenseHeightGrid from "./rowPicker";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -25,14 +25,14 @@ export default function AutoGrid() {
     <div className={classes.root}>
       <Grid container spacing={3}>
         <Grid item xs>
-          <Paper className={classes.paper}><ServicePanel /></Paper>
+        <Paper className={classes.paper}><p>Flights</p><DatePickers /><DenseHeightGrid type="Flights" /></Paper>
         </Grid>
         <Grid item xs>
-          <Paper className={classes.paper}><DatePickers /><InfiniteLoadingGrid /></Paper>
+          <Paper className={classes.paper}><p>Accommodation</p><DatePickers /><DenseHeightGrid type="Accommodation" /></Paper>
           
         </Grid>
         <Grid item xs>
-          <Paper className={classes.paper}>xs</Paper>
+        <Paper className={classes.paper}><p>Attractions</p><DatePickers /><DenseHeightGrid type="Attractions" /></Paper>
         </Grid>
       </Grid>
 

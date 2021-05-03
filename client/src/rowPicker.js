@@ -1,78 +1,24 @@
 import * as React from 'react';
-import { XGrid, GridOverlay } from '@material-ui/x-grid';
-import {
-  useDemoData,
-  getRealData,
-  getCommodityColumns,
-} from '@material-ui/x-grid-data-generator';
-import LinearProgress from '@material-ui/core/LinearProgress';
+import { DataGrid } from '@material-ui/data-grid';
+import { useDemoData } from '@material-ui/x-grid-data-generator';
 
-const MAX_ROW_LENGTH = 500;
-
-async function sleep(duration) {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve();
-    }, duration);
-  });
-}
-
-function CustomLoadingOverlay() {
-  return (
-    <GridOverlay>
-      <div style={{ position: 'absolute', top: 0, width: '100%' }}>
-        <LinearProgress />
-      </div>
-    </GridOverlay>
-  );
-}
-
-export default function InfiniteLoadingGrid() {
-  const [loading, setLoading] = React.useState(false);
-  const [loadedRows, setLoadedRows] = React.useState([]);
-  const mounted = React.useRef(true);
-  const { data } = useDemoData({
-    dataSet: 'Commodity',
-    rowLength: 20,
-    maxColumns: 6,
-  });
-
-  const loadServerRows = async (newRowLength) => {
-    setLoading(true);
-    const newData = await getRealData(newRowLength, getCommodityColumns());
-    // Simulate network throttle
-    await sleep(Math.random() * 500 + 100);
-
-    if (mounted.current) {
-      setLoading(false);
-      setLoadedRows(loadedRows.concat(newData.rows));
-    }
-  };
-
-  const handleOnRowsScrollEnd = (params) => {
-    if (loadedRows.length <= MAX_ROW_LENGTH) {
-      loadServerRows(params.viewportPageSize);
-    }
-  };
-
-  React.useEffect(() => {
-    return () => {
-      mounted.current = false;
-    };
-  }, []);
+export default function DenseHeightGrid({type}) {
+  // const { data } = useDemoData({
+  //   dataSet: 'Commodity',
+  //   rowLength: 100,
+  //   maxColumns: 6,
+  // });
+  console.log(type);
+  const data = {
+    columns:[{field: "id", hide: true},
+             {field: "type", headerName: type, width: 180},
+             {field: "date", headerName: "Date", width: 180},],
+    rows:[{id: "ceeff9f1-6713-53ab-ad98-91e31b8a4eaa",type: "D-7002",date:"1/2/2012"}]
+  }
 
   return (
     <div style={{ height: 400, width: '100%' }}>
-      <XGrid
-        {...data}
-        rows={data.rows.concat(loadedRows)}
-        loading={loading}
-        hideFooterPagination
-        onRowsScrollEnd={handleOnRowsScrollEnd}
-        components={{
-          LoadingOverlay: CustomLoadingOverlay,
-        }}
-      />
+      <DataGrid rowHeight={25} {...data} />
     </div>
   );
 }
