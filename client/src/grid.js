@@ -32,7 +32,7 @@ export default function AutoGrid() {
           
         </Grid>
         <Grid item xs>
-        <Paper className={classes.paper}><p>Attractions</p><DatePickers /><DenseHeightGrid type="Attractions" /></Paper>
+        <Paper className={classes.paper}><p>Transport</p><DatePickers /><DenseHeightGrid type="Transport" /></Paper>
         </Grid>
       </Grid>
 

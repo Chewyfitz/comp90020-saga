@@ -11,9 +11,10 @@ export default function DenseHeightGrid({type}) {
   console.log(type);
   const data = {
     columns:[{field: "id", hide: true},
-             {field: "type", headerName: type, width: 180},
-             {field: "date", headerName: "Date", width: 180},],
-    rows:[{id: "ceeff9f1-6713-53ab-ad98-91e31b8a4eaa",type: "D-7002",date:"1/2/2012"}]
+             {field: "type", headerName: type, width: 160},
+             {field: "date", headerName: "Date", width: 100},
+             {field: "price", headerName: "Price", width: 100},],
+    rows:[{id: "ceeff9f1-6713-53ab-ad98-91e31b8a4eaa",type: "D-7002",date:"1/2/2012",price:"$100"}]
   }
 
   return (
