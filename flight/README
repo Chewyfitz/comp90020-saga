@@ -1,0 +1,15 @@
+API for a Flight Booking Service
+
+Currently assumes the database is running at http://admin:password@localhost:5984
+Ensure you have the couchdb image running at port 5984.
+
+Implemented features are:
+- GET /flights to get all flights (but it only gives you the ids)
+- GET /flights/id to get the flight with database id 'id'
+- GET /flights?param=value to get flights according to the params you supply, which can be:
+    - one of {flight_num, origin, dest, departure, arrival} : to filter for flights that have values matching what you supply
+    - limit : to limit the number of flights you get (default is 25)
+    - skip : to skip a number of flights (default is 0), best used in conjunction with limit
+    Note that you can use multiple params, e.g. GET /flights?dest=China&limit=100&skip=10 and so on
+
+TODO: Bookings!
