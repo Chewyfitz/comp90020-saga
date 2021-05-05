@@ -5,17 +5,12 @@ const router = express.Router();
 axios.defaults.baseURL = "http://admin:password@localhost:5984/flights";
 
 /* GET all flights */
-router.get('/', function(req, res, next) {
-  
+router.get('/', (req, res) => {
   // if we don't have a query
   if (Object.keys(req.query).length === 0) {
     axios.get("/_all_docs")
       .then((response) => {
-        if (response != null) {
-          res.send(response.data);
-        } else {
-          res.send("There was an issue with your request.\n");
-        }
+        res.send(response.data);
       }).catch(e => console.log(e));
   } else {
     // validate and convert query
@@ -32,24 +27,16 @@ router.get('/', function(req, res, next) {
     // send query off
     axios.post("/_find", data = {"selector": query, "skip": skip, "limit": limit}
       ).then((response) => {
-        if (response != null) {
-          res.send(response.data.docs);
-        } else {
-          res.send("There was an issue with your request.\n");
-        }
+        res.send(response.data.docs);
       }).catch(e => console.log(e));
   }
 });
 
 /* GET flight by id */
-router.get('/:id', function(req, res, next) {
+router.get('/:id', (req, res) => {
   axios.get("/" + req.params.id)
     .then((response) => {
-      if (response != null) {
-        res.send(response.data);
-      } else {
-        res.send("There was an issue with your request.\n");
-      }
+      res.send(response.data);
     }).catch(e => console.log(e));
 })
 
