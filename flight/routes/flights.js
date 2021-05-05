@@ -16,7 +16,7 @@ router.get('/', function(req, res, next) {
         } else {
           res.send("There was an issue with your request.\n");
         }
-      })
+      }).catch(e => console.log(e));
   } else {
     // validate and convert query
     var query = {}
@@ -27,6 +27,7 @@ router.get('/', function(req, res, next) {
     if (req.query.dest != null) query.dest = req.query.dest;
     if (req.query.departure != null) query.departure = req.query.departure;
     if (req.query.arrival != null) query.arrival = req.query.arrival;
+    if (req.query.price != null) query.price = req.query.price;
 
     // send query off
     axios.post("/_find", data = {"selector": query, "skip": skip, "limit": limit}
@@ -49,7 +50,7 @@ router.get('/:id', function(req, res, next) {
       } else {
         res.send("There was an issue with your request.\n");
       }
-    })
+    }).catch(e => console.log(e));
 })
 
 
