@@ -22,8 +22,7 @@ N_COUNTRIES = len(COUNTRIES)
 
 # populate - flights
 print("generating flights...")
-requests.put(URL + "flights")
-ids = requests.get("{}_uuids?count={}".format(URL, N_FLIGHTS)).json()["uuids"]
+flights = []
 for i in range(N_FLIGHTS):
     # generate origin and dest
     origin = "Australia"
@@ -39,9 +38,12 @@ for i in range(N_FLIGHTS):
     # generate a flight number
     flight_num = "{}{}{:03d}".format(origin[0], dest[0], i)
     # add the flight
-    flight = {'flight_num':flight_num, 'origin':origin, 'dest':dest, \
-                        'departure':str(departure), 'arrival':str(arrival)}
+    flight = {'flight_num':flight_num, \
+              'origin':origin, 'dest':dest, \
+              'departure':str(departure), 'arrival':str(arrival)}
+    flights.append(flight)
 
-    requests.put("{}flights/{}".format(URL, ids[i]), json=flight)
+requests.put(URL + "flights")
+requests.post(URL + "flights/_bulk_docs", json={"docs":flights})
 
 print("done")
