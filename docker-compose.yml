@@ -1,0 +1,55 @@
+version: "3.9"
+services:
+  api:
+    build: ./api
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./api:/code
+    links:
+      - flight
+      - front-end
+      - hotel
+      - payment
+
+  front-end:
+    build: ./front-end
+    ports:
+      - "8080:5000"
+    volumes:
+      - ./front-end:/code
+
+  flight:
+    build: ./flight
+    ports:
+      - "5001:3000"
+    volumes:
+      - ./flight:/code
+    links:
+      - couch
+
+  hotel:
+    build: ./hotel
+    ports:
+      - "5002:5000"
+    volumes:
+      - ./hotel:/code
+    links:
+      - couch
+
+  payment:
+    build: ./payment
+    ports:
+      - "5003:5000"
+    volumes:
+      - ./front-end:/code
+    links:
+      - couch
+
+  couch:
+    build: ./couchdb
+    ports:
+      - "5984:5984"
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=password
