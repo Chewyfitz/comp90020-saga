@@ -13,7 +13,7 @@ export default function DenseHeightGrid({type,sendDataToParent}) {
   const [fetchResponse, setFetchResponse] = React.useState();
 
   React.useEffect(() => {
-    fetch("http://localhost:3000/flights?origin=Australia")
+    fetch("http://localhost:5001/flights?origin=Australia")
     .then(response => response.json())
     .then(data => setFetchResponse(data));
   },[])

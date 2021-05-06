@@ -28,6 +28,15 @@ services:
     links:
       - couch
 
+  client:
+    build: ./client
+    ports:
+      - "5004:3001"
+    volumes:
+      - ./client:/code
+    links:
+      - flight
+
   hotel:
     build: ./hotel
     ports:
