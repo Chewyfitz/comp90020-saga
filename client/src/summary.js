@@ -17,6 +17,10 @@ const useStyles = makeStyles({
 });
 
 function ccyFormat(num) {
+  console.log(num);
+  if(num == ""){
+    return "";
+  }
   return `${num.toFixed(2)}`;
 }
 
@@ -55,9 +59,9 @@ export default function SpanningTable(all_data) {
     var accomData = all_data["accomData"];
     var transData = all_data["transData"];
     rows = [
-      createRow(flightsData["type"], flightsData["date"], flightsData["price"]),
-      createRow(accomData["type"], accomData["date"], accomData["price"]),
-      createRow(transData["type"], transData["date"], transData["price"]),
+      createRow("a" + flightsData["type"], flightsData["date"], flightsData["price"]),
+      createRow("b" + accomData["type"], accomData["date"], accomData["price"]),
+      createRow("c" + transData["type"], transData["date"], transData["price"]),
     ];
     invoiceSubtotal = subtotal(rows);
     invoiceTaxes = TAX_RATE * invoiceSubtotal;

@@ -6,6 +6,8 @@ import ServicePanel from './table';
 import DatePickers from './datePicker';
 import DenseHeightGrid from "./rowPicker";
 import SpanningTable from "./summary";
+import Tags from "./searchBox";
+import Box from '@material-ui/core/Box';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -18,29 +20,30 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.text.secondary,
   },
   width: {
-    height: 1000,
+    height: 200,
     padding: theme.spacing(2),
     textAlign: 'center',
     color: theme.palette.text.secondary,
   },
+  
 }));
 
 export default function AutoGrid() {
   const classes = useStyles();
   var flights_obj ={
-    "type": "Flights Empty",
-    "date": 3,
-    "price": 100,
+    "type": "No Flights Selected",
+    "date": "",
+    "price": 0,
   }
   var accom_obj ={
-    "type": "Accom Empty",
-    "date": 3,
-    "price": 100,
+    "type": "No Accommodation Selected",
+    "date": "",
+    "price": 0,
   }
   var trans_obj ={
-    "type": "Trans Empty",
-    "date": 3,
-    "price": 100,
+    "type": "No Transport Selected",
+    "date": "",
+    "price": 0,
   }
 
   var [isOpen1, setIsOpen1] = React.useState(flights_obj);
@@ -84,16 +87,32 @@ export default function AutoGrid() {
   
   return (
     <div className={classes.root}>
+      <div className="container" style={{display:"flex"}}>
+      <Box m={1} pt={1} pl={5}>
+        <Tags name="Leaving From"/> 
+        </Box>
+        <Box m={1} pt={1} l={5}>
+        <Tags name="Going To"/> 
+        </Box>
+      </div>
+      <div className="container" style={{display:"flex"}}>
+      <Box m={1} pt={1} pl={5}>
+        <Tags name="Departing"/>  
+        </Box>
+        <Box m={1} pt={1} l={5}>
+        <Tags name="Returning"/> 
+        </Box>
+      </div>
       <Grid container spacing={3}>
         <Grid item xs>
-        <Paper className={classes.paper}><p>Flights</p><DatePickers /><DenseHeightGrid type="Flights" sendDataToParent={sendDataToParent} /></Paper>
+        <Paper className={classes.paper}><p>Flights</p><DenseHeightGrid type="Flights" sendDataToParent={sendDataToParent} /></Paper>
         </Grid>
         <Grid item xs>
-          <Paper className={classes.paper}><p>Accommodation</p><DatePickers /><DenseHeightGrid type="Accommodation" sendDataToParent={sendDataToParent}/></Paper>
+          <Paper className={classes.paper}><p>Accommodation</p><DenseHeightGrid type="Accommodation" sendDataToParent={sendDataToParent}/></Paper>
           
         </Grid>
         <Grid item xs>
-        <Paper className={classes.paper}><p>Transport</p><DatePickers /><DenseHeightGrid type="Transport" sendDataToParent={sendDataToParent}/></Paper>
+        <Paper className={classes.paper}><p>Transport</p> <DenseHeightGrid type="Transport" sendDataToParent={sendDataToParent}/></Paper>
         </Grid>
       </Grid>
       <Grid item xs={12}>
