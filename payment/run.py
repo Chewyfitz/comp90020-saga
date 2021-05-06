@@ -138,7 +138,8 @@ def processTransaction():
       - HTTP status code 400 ( if sum(withdraws) != sum(deposits) )
       - HTTP status code 500
     """
-    return {"request": request.values}, 200
+    response, status = transact(source=request.values['source'], destinations=request.values['destinations'])
+    return response, status
 
 init()
 

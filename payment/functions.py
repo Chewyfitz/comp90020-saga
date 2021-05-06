@@ -107,8 +107,23 @@ def transfer(source:str, dest:str, amount:float=0):
 
     return ({"Error": "Unknown internal server error."}, 500)
 
-def transact(transactions):
-    # TODO: Parse list of transactions
-    # TODO: Validate parsed list of transactions
-    # TODO: Perform transactions
-    return 0
+def transact(source, destinations):
+    # Get total withdrawal amount
+    amount = 0
+    for dest in destinations:
+        amount += dest['amount']
+
+    # Check that balance is sufficient before running transaction
+    src, status = get_account(source)
+    if status0 != 200:
+        return ({"Error": "Source account not found."}, 500)
+    if src0['balance'] < amount:
+        return ({"Error": "Source account balance insufficient."}, 400)
+
+    # Perform transactions
+    for dest in destinations:
+        transfer(source, dest['dest'], dest['amount'])
+
+    # Not sure what to return here, maybe the summary of all accounts?
+    # TODO: Figure out what to return here
+    return (0, 200)
