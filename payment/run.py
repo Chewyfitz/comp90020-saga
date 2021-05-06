@@ -1,25 +1,33 @@
 import sys
-
 from flask import Flask, request
+import requests
+
 from functions import create, deposit, withdraw, transfer, transact, init
+from global_config import root
 
 app = Flask(__name__)
 app.config["DEBUG"] = True
 
-# Create Transaction
+# Dump the database
 @app.route('/', methods=['GET'])
 def test():
-    db = requests.get("http://admin:password@couch:5984/accounts")
+    # get accounts view
+    acc = requests.get(f"{root}/accounts/_design/show/_view/all")
+    if acc.status_code == 404:
+        # create view if it's missing
+        view = {"views":{"all":{"map":"function(doc){emit(doc._id, doc.balance);}"}}}
+        requests.put(f"{root}/accounts/_design/show", json=view)
+        acc = requests.get(f"{root}/accounts/_design/show/_view/all")
 
+    # get transactions view
+    transactions = requests.get(f"{root}/transactions/_design/show/_view/all")
+    if transactions.status_code == 404:
+        # create view if it's missing
+        view = {"views":{"all":{"map":"function(doc){emit(doc._id, doc.balance);}"}}}
+        requests.put(f"{root}/accounts/_design/show", json=view)
+        transactions = requests.get(f"{root}/accounts/_design/show/_view/all")
 
-    if db.status_code == 404:
-        create_accounts()
-        db = requests.get("http://admin:password@couch:5984/accounts")
-
-
-    print(f"DEBUG: db={db}", file=sys.stderr)
-    print(f"DEBUG: status code={db.status_code}", file=sys.stderr)
-    return {"value": db.json()}
+    return {"accounts": acc.json(), "transactions": transactions.json()}
 
 @app.route('/create', methods=['POST'])
 def createAccount():
@@ -131,8 +139,6 @@ def processTransaction():
       - HTTP status code 500
     """
     return {"request": request.values}, 200
-
-
 
 init()
 
