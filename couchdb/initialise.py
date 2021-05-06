@@ -66,4 +66,7 @@ for i in range(N_FLIGHTS):
 requests.put(URL + "flights")
 requests.post(URL + "flights/_bulk_docs", json={"docs":flights})
 
+# bookings
+requests.put(URL + "flight_bookings")
+
 print("done")
