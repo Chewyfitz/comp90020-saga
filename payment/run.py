@@ -1,20 +1,14 @@
-import uuid
 import sys
-import requests
 
 from flask import Flask, request
+from functions import create, deposit, withdraw, transfer, transact, init
 
 app = Flask(__name__)
 app.config["DEBUG"] = True
 
-def create_accounts():
-    requests.put("http://admin:password@couch:5984/accounts")
-
 # Create Transaction
 @app.route('/', methods=['GET'])
 def test():
-    #uid = uuid.uuid1()
-    #print(f"DEBUG: uid={uid}", file=sys.stderr)
     db = requests.get("http://admin:password@couch:5984/accounts")
 
 
@@ -45,7 +39,10 @@ def createAccount():
     Returns (failure):
       - HTTP status code 500
     """
-    return request.values
+
+    response, status = create(name=request.values['name'], balance=float(request.values['balance']) )
+
+    return response, status
 
 @app.route('/deposit/<account>', methods=['PUT'])
 def depositAmt(account):
@@ -66,7 +63,8 @@ def depositAmt(account):
     Returns (failure):
       - HTTP status code 500
     """
-    return {"account": account, "request": request.values}, 200
+    response, status = deposit( account, float(request.values['amount']) )
+    return response, status
 
 @app.route('/withdraw/<account>', methods=['PUT'])
 def withdrawAmt(account):
@@ -87,10 +85,11 @@ def withdrawAmt(account):
     Returns (failure):
       - HTTP status code 500
     """
-    return {"account": account, "request": request.values}, 200
+    response, status = withdraw( account, float(request.values['amount']) )
+    return response, status
 
 @app.route('/transfer/<to_acc>/<from_acc>', methods=['PUT'])
-def transfer(to_acc, from_acc):
+def transferToFrom(to_acc, from_acc):
     """
     Transfer an amount from one account to another
 
@@ -111,8 +110,8 @@ def transfer(to_acc, from_acc):
     amount = request.values['amount']
     return {"to": to_acc, "from": from_acc, "amt": amount, "request": request.values}, 200
 
-@app.route('/transact', methods=['PUT'])
-def transact():
+@app.route('/transact', methods=['PUT', 'POST'])
+def processTransaction():
     """
     Withdraw an amount to an account
 
@@ -133,5 +132,7 @@ def transact():
     return {"request": request.values}, 200
 
 
+
+init()
 
 app.run()
