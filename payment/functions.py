@@ -1,6 +1,5 @@
 import requests
 import os
-import json
 
 def init():
     create_accounts()
@@ -28,11 +27,14 @@ def get_account(id:str):
 
 ################################################################################
 #                            External-facing Functions                         #
-def create(name:str, balance:float = 0):
+def create(name:str, balance:float = 0, id:str=None):
 
     data = {"name": name, "balance":balance}
 
-    res = requests.post(f"{root}/accounts", json=data)
+    if id:
+        res = requests.put(f"{root}/accounts/{id}", json=data)
+    else:    
+        res = requests.post(f"{root}/accounts", json=data)
 
     data['id'] = res.json()['id']
     
@@ -49,7 +51,7 @@ def deposit(id:str, amount:float = 0):
     update['balance'] = round(update['balance'] + amount, 2)
 
     # PUT the updated balance into the database
-    res = requests.put(f"{root}/accounts/{id}", data=json.dumps(update) )
+    res = requests.put(f"{root}/accounts/{id}", json=update)
 
     # Clear out unnecessary fields for retransmission
     del update['_rev']
@@ -73,7 +75,7 @@ def withdraw(id:str, amount:float = 0):
     update['balance'] = round(update['balance'] - amount, 2)
 
     # PUT the updated balance into the database
-    res = requests.put(f"{root}/accounts/{id}", data=json.dumps(update) )
+    res = requests.put(f"{root}/accounts/{id}", json=update )
 
     # Clear out unnecessary fields for retransmission
     del update['_rev']
@@ -86,7 +88,29 @@ def withdraw(id:str, amount:float = 0):
 def transfer(source:str, dest:str, amount:float=0):
     if amount == 0:
         return ({"Error": "Transfer amount requred."}, 400)
-    return 0
+
+    src0, status0 = get_account(source)
+    if status0 != 200:
+        return ({"Error": "Source account not found."}, 500)
+    if src0['balance'] < amount:
+        return ({"Error": "Source account balance insufficient."}, 400)
+
+    src1, status1 = get_account(dest)
+    if status1 != 200:
+        return ({"Error": "Source account not found."}, 500)
+
+    res = requests.post(
+        f"{root}/transactions", 
+        json={"from": source, "to": dest, "amount":amount})
+
+    acc1, status1 = withdraw(source, amount)
+    acc2, status2 = deposit(dest, amount)
+
+    if status1 == status2 and status1 == 201:
+        return ({"from": acc1, "to": acc2, "amount":amount}, 200)
+    # Don't ask what the plan is if this *doesn't* work...
+
+    return ({"Error": "Unknown internal server error."}, 500)
 
 def transact(transactions):
     # TODO: Parse list of transactions

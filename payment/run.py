@@ -107,8 +107,9 @@ def transferToFrom(to_acc, from_acc):
     Returns (failure):
       - HTTP status code 500
     """
-    amount = request.values['amount']
-    return {"to": to_acc, "from": from_acc, "amt": amount, "request": request.values}, 200
+    amount = float(request.values['amount'])
+    response, status = transfer(dest=to_acc, source=from_acc, amount=amount)
+    return response, status
 
 @app.route('/transact', methods=['PUT', 'POST'])
 def processTransaction():
