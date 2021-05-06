@@ -1,10 +1,9 @@
 FROM node:14
-WORKDIR /code/client
+WORKDIR /code
 
 # add and install dependencies
 COPY package*.json ./
 RUN npm install
-ENV DEBUG=*
 
 # add app code
 COPY . .
