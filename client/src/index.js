@@ -8,9 +8,8 @@ import FullWidthGrid from "./summary";
 
 ReactDOM.render(
   <React.StrictMode>
-    {/* <App /> */}
     <AutoGrid />
-    <FullWidthGrid />
+    {/* <FullWidthGrid /> */}
   </React.StrictMode>,
   document.getElementById('root')
 );

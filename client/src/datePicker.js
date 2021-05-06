@@ -19,16 +19,18 @@ export default function DatePickers() {
 
   return (
     <form className={classes.container} noValidate>
+      <div style={{padding:10}}>
       <TextField
         id="date"
         label="Select Date"
         type="date"
-        defaultValue="2021-05-3"
+        defaultValue="2021-05-03"
         className={classes.textField}
         InputLabelProps={{
           shrink: true,
         }}
       />
+      </div>
     </form>
   );
 }
