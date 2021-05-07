@@ -2,21 +2,18 @@ const axios = require('axios');
 const express = require('express');
 const router = express.Router();
 
-// axios.defaults.baseURL = "http://admin:password@localhost:5984/flights";
-axios.defaults.baseURL = "http://admin:password@couch:5984/flights";
+axios.defaults.baseURL =
+  "http://admin:password@"
+    + (process.env.DATABASE || "localhost")
+    + ":5984";
 
 /* GET all flights */
-router.get('/', function(req, res, next) {
-  
+router.get('/', (req, res) => {
   // if we don't have a query
   if (Object.keys(req.query).length === 0) {
-    axios.get("/_all_docs")
+    axios.get("/flights/_all_docs")
       .then((response) => {
-        if (response != null) {
-          res.send(response.data);
-        } else {
-          res.send("There was an issue with your request.\n");
-        }
+        res.send(response.data);
       }).catch(e => console.log(e));
   } else {
     // validate and convert query
@@ -31,27 +28,26 @@ router.get('/', function(req, res, next) {
     if (req.query.price != null) query.price = req.query.price;
 
     // send query off
-    axios.post("/_find", data = {"selector": query, "skip": skip, "limit": limit}
+    axios.post("/flights/_find", data = {"selector": query, "skip": skip, "limit": limit}
       ).then((response) => {
-        if (response != null) {
-          res.send(response.data.docs);
-        } else {
-          res.send("There was an issue with your request.\n");
-        }
+        res.send(response.data.docs);
       }).catch(e => console.log(e));
   }
 });
 
 /* GET flight by id */
-router.get('/:id', function(req, res, next) {
-  axios.get("/" + req.params.id)
+router.get('/:id', (req, res) => {
+  axios.get("/flights/" + req.params.id)
     .then((response) => {
-      if (response != null) {
-        res.send(response.data);
+      res.send(response.data);
+    }).catch(e => {
+      if (e.response.status === 404) {
+        res.status(404).send(e.response.data);
       } else {
-        res.send("There was an issue with your request.\n");
+        console.log(e.response);
+
       }
-    }).catch(e => console.log(e));
+    });
 })
 
 
