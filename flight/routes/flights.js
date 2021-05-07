@@ -2,7 +2,8 @@ const axios = require('axios');
 const express = require('express');
 const router = express.Router();
 
-axios.defaults.baseURL = "http://admin:password@localhost:5984/flights";
+// axios.defaults.baseURL = "http://admin:password@localhost:5984/flights";
+axios.defaults.baseURL = "http://admin:password@couch:5984/flights";
 
 /* GET all flights */
 router.get('/', function(req, res, next) {

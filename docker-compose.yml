@@ -11,7 +11,7 @@ services:
       - front-end
       - hotel
       - payment
-
+      
   front-end:
     build: ./client
     ports:
