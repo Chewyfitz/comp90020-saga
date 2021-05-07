@@ -22,11 +22,13 @@ services:
   flight:
     build: ./flight
     ports:
-      - "5001:3000"
+      - "5001:5000"
     volumes:
       - ./flight:/code
     links:
       - couch
+    environment:
+      - DATABASE=couch
 
   hotel:
     build: ./hotel

@@ -4,7 +4,10 @@ const lock = new Mutex();
 const express = require('express');
 const router = express.Router();
 
-axios.defaults.baseURL = "http://admin:password@localhost:5984";
+axios.defaults.baseURL =
+  "http://admin:password@"
+    + (process.env.DATABASE || "localhost")
+    + ":5984";
 
 /* GET bookings */
 router.get('/', (req, res) => {
