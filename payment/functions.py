@@ -115,15 +115,17 @@ def transact(source, destinations):
 
     # Check that balance is sufficient before running transaction
     src, status = get_account(source)
-    if status0 != 200:
+    if status != 200:
         return ({"Error": "Source account not found."}, 500)
-    if src0['balance'] < amount:
+    if src['balance'] < amount:
         return ({"Error": "Source account balance insufficient."}, 400)
 
+    summary = {}
+
     # Perform transactions
-    for dest in destinations:
-        transfer(source, dest['dest'], dest['amount'])
+    for i, dest in enumerate(destinations):
+        summary[i], _ = transfer(source, dest['dest'], dest['amount'])
 
     # Not sure what to return here, maybe the summary of all accounts?
     # TODO: Figure out what to return here
-    return (0, 200)
+    return (summary, 200)
