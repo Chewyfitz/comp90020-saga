@@ -7,10 +7,14 @@ api = Api(app)
 
 '''
 Cases to worry about:
--microservice fails and microservice responds with negative result.
+-microservice fails
 -SEC fails and starts back up where it left off. How does it know who to send the result back to? 
 Should front end just get a 'failed' and when SEC comes back, it just compensates anything it finds unfinished?
--concurrency with the log.
+-concurrency with the log if multiple posts.
+
+NOTE: currently using just a txt file as the SAGA log. This may cause issues. may need a database?
+
+You can test this by running test.py while the SEC is up. Make sure the log.json only has {} in it. 
 '''
 
 def addLog(trip, key, msg=True):
@@ -141,7 +145,7 @@ class SEC(Resource):
     def post(self):
         trip = request.get_json()
         res = saga(trip)
-        return {'result': res}
+        return {'ok': res}
 
 api.add_resource(SEC, '/')
 
