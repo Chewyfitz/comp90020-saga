@@ -11,7 +11,27 @@ axios.defaults.baseURL =
 
 /* GET bookings */
 router.get('/', (req, res) => {
-  res.send("<p>bookings here</p>");
+  // if we don't have a query
+  if (Object.keys(req.query).length === 0) {
+    axios.get("/hotel_bookings/_all_docs")
+      .then((response) => {
+        res.send(response.data);
+      }).catch(e => console.log(e));
+  } else {
+    // validate and convert query
+    var query = {}
+    var skip = req.query.skip == null ? 0 : parseInt(req.query.skip);
+    var limit = req.query.limit == null ? 25 : parseInt(req.query.limit);
+    if (req.query.hotel != null) query.hotel = req.query.hotel;
+    if (req.query.user != null) query.user = req.query.user;
+    if (req.query.status != null) query.status = req.query.status;
+
+    // send query off
+    axios.post("/hotel_bookings/_find", data = {"selector": query, "skip": skip, "limit": limit}
+      ).then((response) => {
+        res.send(response.data.docs);
+      }).catch(e => console.log(e));
+  }
 });
 
 /* Get an id */
@@ -29,36 +49,32 @@ router.get('/id', (req, res) => {
 router.put('/:id', (req, res) => {
   lock.runExclusive(() => {
     // validate fields
-    if (req.body.user == null || req.body.flight == null) {
+    if (req.body.user == null || req.body.hotel == null) {
       return res.status(400)
-                .send({message:"bookings require user and flight fields"});
+                .send({message:"bookings require user and hotel fields"});
     }
 
-    // fields include: booked by, booked flight[, booking status = (active/cancelled)]
+    // fields include: booked by, booked hotel[, booking status = (active/cancelled)]
     var id = req.params.id;
-    var flight = req.body.flight;
+    var hotel = req.body.hotel;
     var user = req.body.user;
 
-    // check the flight is valid
+    // check the hotel is valid
     axios
-      .get("/flights/" + flight)
+      .get("/hotels/" + hotel)
       .then(() => {
-        console.log("flight valid");
         // check whether item is booked in an active booking with a diff id
         axios
-          .post("/flight_bookings/_find", data={selector: {flight: id, status: "active"}, })
+          .post("/hotel_bookings/_find", data={selector: {hotel: hotel, status: "active", _id:{"not": id}}, })
           .then(response => {
-            console.log("found flight data");
             //  - if booked return fail status
             if (response.data.docs.length > 0) {
-              console.log("flight already booked");
-              res.send({ok:false, message:"that flight is already booked"})
+              res.send({ok:false, message:"that hotel is already booked"})
             //  - otherwise create booking
             } else {
-              console.log("creating booking");
               axios
-                .put("flight_bookings/" + id, data={
-                  flight: flight,
+                .put("hotel_bookings/" + id, data={
+                  hotel: hotel,
                   user: user,
                   status: "active"
                 })
@@ -80,7 +96,7 @@ router.put('/:id', (req, res) => {
       })
       .catch(e => {
         if (e.response.status === 404) {
-          res.status(404).send({message:"flight not found - please use a valid flight id"});
+          res.status(404).send({message:"hotel not found - please use a valid hotel id"});
         } else {
           console.log(e);
         }
@@ -95,11 +111,11 @@ router.delete('/:id', (req, res) => {
     var id = req.params.id;
     // fetch the booking to make sure it exists
     axios
-      .get('/flight_bookings/' + id)
+      .get('/hotel_bookings/' + id)
       .then(response => {
         response.data.status = "cancelled";
         axios
-          .put("flight_bookings/" + id, data=response.data)
+          .put("hotel_bookings/" + id, data=response.data)
           .then(response => {
             res.send(response.data);
           })
