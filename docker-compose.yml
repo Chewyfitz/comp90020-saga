@@ -39,6 +39,9 @@ services:
       - ./hotel:/code
     links:
       - couch
+    environment:
+      - DATABASE=couch
+      - PORT=5000
 
   payment:
     build: ./payment
