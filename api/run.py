@@ -8,7 +8,8 @@ api = Api(app)
 '''
 Cases to worry about:
 -microservice fails and microservice responds with negative result.
--SEC fails and starts back up where it left off.
+-SEC fails and starts back up where it left off. How does it know who to send the result back to? 
+Should front end just get a 'failed' and when SEC comes back, it just compensates anything it finds unfinished?
 -concurrency with the log.
 '''
 
@@ -19,41 +20,80 @@ def addLog(trip, key, msg=True):
     with open('api/log.json', 'w') as f:
         json.dump(log, f)
 
-def sagaCar(trip):
-    #send api request to car booking service
+def carBook(trip):
+    #send api request
     response = True #example response
     if response:
-        addLog(trip,'endCar')
+        addLog(trip,'carEnd')
+        return True
     else:
-        addLog(trip, 'abortCar')
-        #compensate actions
+        addLog(trip, 'carAbort')
+        return False
 
-def sagaFlights(trip):
-    #send api request to car booking service
+def flightsBook(trip):
+    #send api request
     response = True #example response
     if response:
-        addLog(trip,'endFlights')
+        addLog(trip,'flightsEnd')
+        return True
     else:
-        addLog(trip, 'abortFlights')
-        #compensate actions
+        addLog(trip, 'flightsAbort')
+        return False
 
-def sagaHotel(trip):
-    #send api request to car booking service
-    response = True #example response
+def hotelBook(trip):
+    #send api request
+    response = False #example response
     if response:
-        addLog(trip,'endHotel')
+        addLog(trip,'hotelEnd')
+        return True
     else:
-        addLog(trip, 'abortHotel')
-        #compensate actions
+        addLog(trip, 'hotelAbort')
+        return False
 
-def sagaPayment(trip):
-    #send api request to car booking service
+def paymentBook(trip):
+    #send api request
     response = True #example response
     if response:
-        addLog(trip,'endPayment')
+        addLog(trip,'paymentEnd')
+        return True
     else:
-        addLog(trip, 'abortPayment')
-        #compensate actions
+        addLog(trip, 'paymentAbort')
+        return False
+
+def carComp(trip):
+    #send api request
+    addLog(trip, 'carAbort')
+
+def flightsComp(trip):
+    #send api request 
+    addLog(trip, 'flightsAbort')
+
+def hotelComp(trip):
+    #send api request 
+    addLog(trip, 'hotelAbort')
+
+def paymentComp(trip):
+    #send api request 
+    addLog(trip, 'paymentAbort')
+
+def compensateSaga(trip):
+    with open('api/log.json', 'r') as f:
+        log = json.load(f)
+    
+    if not ('carStart' not in log[trip['tripID']] or 'carAbort' in log[trip['tripID']]):
+        carComp(trip)
+
+    if not ('flightsStart' not in log[trip['tripID']] or 'flightsAbort' in log[trip['tripID']]):
+        flightsComp(trip)
+
+    if not ('hotelStart' not in log[trip['tripID']] or 'hotelAbort' in log[trip['tripID']]):
+        hotelComp(trip)
+
+    if not ('paymentStart' not in log[trip['tripID']] or 'paymentAbort' in log[trip['tripID']]):
+        paymentComp(trip)
+    
+    addLog(trip, 'end', False)
+
 
 def saga(trip):
         with open('api/log.json', 'r') as f:
@@ -68,32 +108,40 @@ def saga(trip):
             return log[trip['tripID']]['end'] #True or False
 
         if 'car' in trip:
-            addLog(trip,'startCar')
-            sagaCar(trip)
+            addLog(trip,'carStart')
+            result = carBook(trip)
+            if not result:
+                compensateSaga(trip)
+                return False
 
         if 'flights' in trip:
-            addLog(trip,'startFlights')
-            sagaFlights(trip)
+            addLog(trip,'flightsStart')
+            result = flightsBook(trip)
+            if not result:
+                compensateSaga(trip)
+                return False
 
         if 'hotel' in trip:
-            addLog(trip,'startHotel')
-            sagaHotel(trip)
+            addLog(trip,'hotelStart')
+            result = hotelBook(trip)
+            if not result:
+                compensateSaga(trip)
+                return False
 
         #Payment will always be present
-        addLog(trip,'startPayment')
-        sagaPayment(trip)
+        addLog(trip,'paymentStart')
+        paymentBook(trip)
 
         addLog(trip, 'end')
 
         return True
-
 
 class SEC(Resource):
 
     def post(self):
         trip = request.get_json()
         res = saga(trip)
-        return {'result': 'data'}
+        return {'result': res}
 
 api.add_resource(SEC, '/')
 
