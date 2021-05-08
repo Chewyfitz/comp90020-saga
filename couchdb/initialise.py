@@ -26,13 +26,14 @@ F_PRICE_SD = 150    # standard deviation for flight prices
 F_PRICE_MIN = 400   # minimum flight price
 
 # params - hotels
+N_HOTELS = 1000  # number of flights to generate
 H_PRICE_MEAN = 250
 H_PRICE_SD = 75
 H_PRICE_MIN = 50
 
 # useful functions
-def generate_price(mean, sd, min):
-    return max(F_PRICE_MIN, int(random.normalvariate(F_PRICE_MEAN, F_PRICE_SD)))
+def generate_price(mean, sd, minimum):
+    return max(minimum, int(random.normalvariate(mean, sd)))
 def add_days(date, days):
     return date + datetime.timedelta(days=days)
 def generate_flight():
@@ -89,7 +90,7 @@ requests.post(URL + "flights/_bulk_docs", json={"docs":flights})
 # populate hotels
 print("generating hotels...")
 hotels = []
-for i in range(N_FLIGHTS):
+for i in range(N_HOTELS):
     hotel = generate_hotel()
     hotels.append(hotel)
 
