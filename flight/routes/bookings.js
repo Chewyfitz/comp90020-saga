@@ -11,7 +11,27 @@ axios.defaults.baseURL =
 
 /* GET bookings */
 router.get('/', (req, res) => {
-  res.send("<p>bookings here</p>");
+  // if we don't have a query
+  if (Object.keys(req.query).length === 0) {
+    axios.get("/flight_bookings/_all_docs")
+      .then((response) => {
+        res.send(response.data);
+      }).catch(e => console.log(e));
+  } else {
+    // validate and convert query
+    var query = {}
+    var skip = req.query.skip == null ? 0 : parseInt(req.query.skip);
+    var limit = req.query.limit == null ? 25 : parseInt(req.query.limit);
+    if (req.query.flight != null) query.flight = req.query.flight;
+    if (req.query.user != null) query.user = req.query.user;
+    if (req.query.status != null) query.status = req.query.status;
+
+    // send query off
+    axios.post("/flight_bookings/_find", data = {"selector": query, "skip": skip, "limit": limit}
+      ).then((response) => {
+        res.send(response.data.docs);
+      }).catch(e => console.log(e));
+  }
 });
 
 /* Get an id */
@@ -43,19 +63,15 @@ router.put('/:id', (req, res) => {
     axios
       .get("/flights/" + flight)
       .then(() => {
-        console.log("flight valid");
         // check whether item is booked in an active booking with a diff id
         axios
-          .post("/flight_bookings/_find", data={selector: {flight: id, status: "active"}, })
+          .post("/flight_bookings/_find", data={selector: {flight: flight, status: "active", _id:{"not": id}}, })
           .then(response => {
-            console.log("found flight data");
             //  - if booked return fail status
             if (response.data.docs.length > 0) {
-              console.log("flight already booked");
               res.send({ok:false, message:"that flight is already booked"})
             //  - otherwise create booking
             } else {
-              console.log("creating booking");
               axios
                 .put("flight_bookings/" + id, data={
                   flight: flight,
