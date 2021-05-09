@@ -28,6 +28,9 @@ services:
       - ./flight:/code
     links:
       - couch
+    environment:
+      - DATABASE=couch
+      - PORT=5000
 
   hotel:
     build: ./hotel
