@@ -9,6 +9,9 @@ import SpanningTable from "./summary";
 import Tags from "./searchBox";
 import Box from '@material-ui/core/Box';
 
+
+import BasicTextField from "./textField"
+
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -85,6 +88,8 @@ export default function AutoGrid() {
 
   var [fromFilter, setFromFilter] = React.useState();
   var [toFilter, setToFilter] = React.useState();
+  var [dateFromFilter, setDateFromFilter] = React.useState();
+  var [dateToFilter, setdateToFilter] = React.useState();
 
   const updateFrom = (input) => {
     setFromFilter(input);
@@ -93,38 +98,49 @@ export default function AutoGrid() {
   const updateTo = (input) => {
     setToFilter(input);
     
+    
   }
+
+
+  const setFilters = (from,to,leaveDate,returnDate) => {
+    console.log("----------");
+    console.log(from);
+    console.log(to);
+    console.log(leaveDate);
+    console.log(returnDate);
+
+    setFromFilter(from);
+    setToFilter(to);
+    setDateFromFilter(leaveDate);
+    setdateToFilter(returnDate);
+
+  }
+
+  
   // var [fromFilter, setFromFilter] = React.useState();
   // var [fromFilter, setFromFilter] = React.useState();
   
   return (
     <div className={classes.root}>
+
       <div className="container" style={{display:"flex"}}>
-      <Box m={1} pt={1} pl={5}>
-        <Tags name={fromFilter} onChange={updateFrom}/> 
-        </Box>
-        <Box m={1} pt={1} l={5}>
-        <Tags name={toFilter} onChange={updateTo}/> 
-        </Box>
-      </div>
-      <div className="container" style={{display:"flex"}}>
-      <Box m={1} pt={1} pl={5}>
-        <Tags name="Departing" onChange={updateFrom}/> 
-        </Box>
-        <Box m={1} pt={1} l={5}>
-        <Tags name="Returning" onChange={updateTo}/> 
+      
+        
+        
+        <Box m={4} pt={1} l={5}>
+        <BasicTextField setFiltersFunction={setFilters}/>
         </Box>
       </div>
       <Grid container spacing={3}>
         <Grid item xs>
-        <Paper className={classes.paper}><p>Flights Departing</p><DenseHeightGrid type="Flights Departing" sendDataToParent={sendDataToParent} filter={fromFilter} /></Paper>
+        <Paper className={classes.paper}><p>Flights Departing</p><DenseHeightGrid type="Flights Departing" sendDataToParent={sendDataToParent} from={fromFilter} to={toFilter} date={dateFromFilter}/></Paper>
         </Grid>
         <Grid item xs>
-          <Paper className={classes.paper}><p>Flights Returning</p><DenseHeightGrid type="Flights Returning" sendDataToParent={sendDataToParent} filter={toFilter}/></Paper>
+          <Paper className={classes.paper}><p>Flights Returning</p><DenseHeightGrid type="Flights Returning" sendDataToParent={sendDataToParent} from={toFilter} to={fromFilter} date={dateToFilter}/></Paper>
           
         </Grid>
         <Grid item xs>
-        <Paper className={classes.paper}><p>Accommodation</p> <DenseHeightGrid type="Accommodation" sendDataToParent={sendDataToParent}/></Paper>
+        <Paper className={classes.paper}><p>Accommodation</p> <DenseHeightGrid type="Accommodation" sendDataToParent={sendDataToParent} to={toFilter}/></Paper>
         </Grid>
       </Grid>
       <Grid item xs={12}>

@@ -10,8 +10,11 @@ import Paper from '@material-ui/core/Paper';
 
 import PopUp from "./Popup"; 
 
+import TransitionsModal from "./model"; 
+
 // import Button from '@material-ui/core/Button';
 import SearchPage from "./SearchPage";
+
 
 // import Overlay from 'react-bootstrap/Overlay'
 // import Popover from 'react-bootstrap/Popover'
@@ -86,12 +89,6 @@ export default function SpanningTable(all_data) {
   //     </Popover.Content>
   //   </Popover>
   // );
-  const [state, setState] = React.useState(false);
- 
-  const togglePop = () => {
-    setState(!state);
-    console.log(state);
-  };
 
 
   return (
@@ -138,24 +135,13 @@ export default function SpanningTable(all_data) {
           <TableRow>
             <TableCell rowSpan={3} />
             <TableCell colSpan={2} align="right">    
-          <div>
-              <div className="btn" onClick={togglePop}>
-                <button>Checkout</button>
-              </div>
-          </div>
-
+            <TransitionsModal allData={rows}/>
             </TableCell>
           </TableRow>
         </TableBody>
       </Table>
-      
-      {state ? <PopUp toggle={togglePop} rows={rows} /> : null}
-      
     </TableContainer>
 
-    
-    
-    
   );
   
 }
