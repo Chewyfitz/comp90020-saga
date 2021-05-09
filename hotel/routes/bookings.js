@@ -25,6 +25,12 @@ router.get('/', (req, res) => {
     if (req.query.hotel != null) query.hotel = req.query.hotel;
     if (req.query.user != null) query.user = req.query.user;
     if (req.query.status != null) query.status = req.query.status;
+    // use "start" and "finish" to check for overlap!
+    if (req.query.start != null && req.query.finish != null) {
+      // check overlap - https://stackoverflow.com/a/13513973
+      query.start = {"$lt": req.query.finish};
+      query.finish = {"$gt": req.query.start};
+    }
 
     // send query off
     axios.post("/hotel_bookings/_find", data = {"selector": query, "skip": skip, "limit": limit}
@@ -49,23 +55,34 @@ router.get('/id', (req, res) => {
 router.put('/:id', (req, res) => {
   lock.runExclusive(() => {
     // validate fields
-    if (req.body.user == null || req.body.hotel == null) {
-      return res.status(400)
-                .send({message:"bookings require user and hotel fields"});
+    if (req.body.user == null || req.body.hotel == null 
+        || req.body.start == null || req.body.finish == null) {
+      return res.status(400).send({
+        message:"bookings require user, hotel, start and finish fields"
+      });
     }
 
-    // fields include: booked by, booked hotel[, booking status = (active/cancelled)]
     var id = req.params.id;
     var hotel = req.body.hotel;
+    var start = req.body.start;   // customer moves in on this day
+    var finish = req.body.finish; // customer moves out on this day (someone can then move in on the same day)
     var user = req.body.user;
 
     // check the hotel is valid
     axios
       .get("/hotels/" + hotel)
       .then(() => {
-        // check whether item is booked in an active booking with a diff id
+        // check whether hotel is booked in an active booking with a diff id
+        var selector =  {
+          hotel: hotel, 
+          status: "active", 
+          "$not": {_id : id },
+          // check overlap - https://stackoverflow.com/a/13513973
+          start: {"$lt": finish},
+          finish: {"$gt": start}
+        };
         axios
-          .post("/hotel_bookings/_find", data={selector: {hotel: hotel, status: "active", _id:{"not": id}}, })
+          .post("/hotel_bookings/_find", data={selector: selector})
           .then(response => {
             //  - if booked return fail status
             if (response.data.docs.length > 0) {
@@ -75,11 +92,12 @@ router.put('/:id', (req, res) => {
               axios
                 .put("hotel_bookings/" + id, data={
                   hotel: hotel,
+                  start: start,
+                  finish: finish,
                   user: user,
                   status: "active"
                 })
                 .then(response => {
-                  console.log("booking sent");
                   res.send(response.data);
                 })
                 .catch(e => {
