@@ -2,11 +2,11 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
-import ServicePanel from './table';
-import DatePickers from './datePicker';
+
+
 import DenseHeightGrid from "./rowPicker";
 import SpanningTable from "./summary";
-import Tags from "./searchBox";
+
 import Box from '@material-ui/core/Box';
 
 
@@ -91,15 +91,7 @@ export default function AutoGrid() {
   var [dateFromFilter, setDateFromFilter] = React.useState();
   var [dateToFilter, setdateToFilter] = React.useState();
 
-  const updateFrom = (input) => {
-    setFromFilter(input);
-    
-  }
-  const updateTo = (input) => {
-    setToFilter(input);
-    
-    
-  }
+
 
 
   const setFilters = (from,to,leaveDate,returnDate) => {

@@ -13,7 +13,7 @@ export default function DenseHeightGrid(props) {
   var type = props.type;
   var sendDataToParent = props.sendDataToParent;
   var from = "origin=" + props.from + "&";
-  if(type=="Flights Departing" || type=="Flights Returning"){
+  if(type==="Flights Departing" || type==="Flights Returning"){
     var to = "dest=" + props.to + "&";
   }
   else{
@@ -25,7 +25,7 @@ export default function DenseHeightGrid(props) {
   const [fetchResponse, setFetchResponse] = React.useState();
 
   React.useEffect(() => {
-    if(type=="Flights Departing" || type=="Flights Returning"){
+    if(type==="Flights Departing" || type==="Flights Returning"){
       var params= ""
       if(props.from){
         params = params+from;
@@ -61,7 +61,7 @@ export default function DenseHeightGrid(props) {
     
     data.rows=[];
     for(var i=0;i<fetchResponse.length;i++){
-      if(type=="Flights Departing" || type=="Flights Returning"){
+      if(type==="Flights Departing" || type==="Flights Returning"){
         var tmp = {id:fetchResponse[i]["_id"] ,type:fetchResponse[i]["flight_num"] ,date:fetchResponse[i]["departure"],price:fetchResponse[i]["price"]};
       }
       else{

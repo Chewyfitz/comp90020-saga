@@ -4,12 +4,12 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import AutoGrid from "./grid";
-import FullWidthGrid from "./summary";
+
 
 ReactDOM.render(
   <React.StrictMode>
     <AutoGrid />
-    {/* <FullWidthGrid /> */}
+  
     <p></p>
     <p></p>
     <p></p>

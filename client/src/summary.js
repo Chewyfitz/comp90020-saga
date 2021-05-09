@@ -7,21 +7,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-
-import PopUp from "./Popup"; 
-
 import TransitionsModal from "./model"; 
-
-// import Button from '@material-ui/core/Button';
-import SearchPage from "./SearchPage";
-
-
-// import Overlay from 'react-bootstrap/Overlay'
-// import Popover from 'react-bootstrap/Popover'
-// import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
-import { Header, Button, Popup, Grid } from 'semantic-ui-react'
-const TAX_RATE = 0.07;
-
 
 const useStyles = makeStyles({
   table: {
