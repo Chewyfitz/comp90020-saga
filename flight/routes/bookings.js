@@ -65,7 +65,7 @@ router.put('/:id', (req, res) => {
       .then(() => {
         // check whether item is booked in an active booking with a diff id
         axios
-          .post("/flight_bookings/_find", data={selector: {flight: flight, status: "active", _id:{"not": id}}, })
+          .post("/flight_bookings/_find", data={selector: {flight: flight, status: "active", "$not":{_id : id}}, })
           .then(response => {
             //  - if booked return fail status
             if (response.data.docs.length > 0) {
