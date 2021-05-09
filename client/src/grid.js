@@ -95,17 +95,10 @@ export default function AutoGrid() {
 
 
   const setFilters = (from,to,leaveDate,returnDate) => {
-    console.log("----------");
-    console.log(from);
-    console.log(to);
-    console.log(leaveDate);
-    console.log(returnDate);
-
     setFromFilter(from);
     setToFilter(to);
     setDateFromFilter(leaveDate);
     setdateToFilter(returnDate);
-
   }
 
   

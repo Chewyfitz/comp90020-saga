@@ -34,30 +34,25 @@ function subtotal(items) {
 }
 
 var rows = [
-  createRow('Paperclips (Box)', 100, 1.15),
-  createRow('Paper (Case)', 10, 45.99),
-  createRow('Waste Basket', 2, 17.99),
+  createRow('A', 100, 1.15),
+  createRow('B', 10, 45.99),
+  createRow('C', 2, 17.99),
 ];
 
 var invoiceTotal = subtotal(rows);
 
 export default function SpanningTable(all_data) {
   const classes = useStyles();
-
-  
-  
   const [fetchResponse, setFetchResponse] = React.useState();
 
   React.useEffect(() => {
-    console.log("WHY IS THIS TRIG2");
-    console.log(all_data);
     var flightsData = all_data["flightsData"];
     var accomData = all_data["accomData"];
     var transData = all_data["transData"];
     rows = [
-      createRow("a" + flightsData["type"], flightsData["date"], flightsData["price"]),
-      createRow("b" + accomData["type"], accomData["date"], accomData["price"]),
-      createRow("c" + transData["type"], transData["date"], transData["price"]),
+      createRow(flightsData["type"], flightsData["date"], flightsData["price"]),
+      createRow(accomData["type"], accomData["date"], accomData["price"]),
+      createRow(transData["type"], transData["date"], transData["price"]),
     ];
     invoiceTotal = subtotal(rows);
     setFetchResponse(rows)
@@ -66,16 +61,6 @@ export default function SpanningTable(all_data) {
   if(fetchResponse){
     rows = fetchResponse;
   }
-  // const popover = (
-  //   <Popover id="popover-basic">
-  //     <Popover.Title as="h3">Popover right</Popover.Title>
-  //     <Popover.Content>
-  //       And here's some <strong>amazing</strong> content. It's very engaging.
-  //       right?
-  //     </Popover.Content>
-  //   </Popover>
-  // );
-
 
   return (
     <TableContainer component={Paper}>
