@@ -1,9 +1,12 @@
-FROM python:3
-WORKDIR /code
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+FROM node:14
+WORKDIR /code/flights
 
-ENV FLASK_APP=run.py
+# add and install dependencies
+COPY package*.json ./
+RUN npm install
 
-COPY run.py .
-CMD flask run --host=0.0.0.0
+# add app code
+COPY . .
+
+# run
+CMD npm start
