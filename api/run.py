@@ -46,7 +46,7 @@ def flightsBook(trip):
 
 def hotelBook(trip):
     #send api request
-    response = False #example response
+    response = True #example response
     if response:
         addLog(trip,'hotelEnd')
         return True
@@ -140,6 +140,15 @@ def saga(trip):
 
         return True
 
+#On startup, it goes through log to see if sagas are unfinished, and compensates
+def logCheck():
+    with open('api/log.json', 'r') as f:
+        log = json.load(f)
+    for tripID in log.keys():
+        if 'end' not in log[tripID]:
+            trip = {'tripID':tripID}
+            compensateSaga(trip)
+
 class SEC(Resource):
 
     def post(self):
@@ -150,4 +159,6 @@ class SEC(Resource):
 api.add_resource(SEC, '/')
 
 app.run()
+
+logCheck()
 
