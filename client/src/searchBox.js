@@ -14,23 +14,37 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Tags(name) {
-  const classes = useStyles();
-    console.log(name.name)
-
-
-
+export default function Tags(props) {
     
+    var setKeyword = props.onChange;
+    var name = props.name;
+    const classes = useStyles();
+    const handleKeyDown = (event) => {
+        if (event.key === 'Enter') {
+            
+            console.log(event.target.value);
+            setKeyword(event.target.value);
+        }
+      }
+
   return (
     <div className={classes.root}>
-      <Autocomplete
+          <input 
+            key="random1"
+            value={name}
+            placeholder={"search country"}
+            // onChange={(e) => setKeyword(e.target.value)}
+            // onChange={(e) => console.log(e.key)}
+            onKeyDown={handleKeyDown}
+            />
+      {/* <Autocomplete
         multiple
         id="tags-outlined"
         options={top100Films}
         getOptionLabel={(option) => option.title}
         filterSelectedOptions
         renderInput={(params) => (
-          <TextField
+            <TextField
             {...params}
             variant="outlined"
             label={name.name}
@@ -44,7 +58,7 @@ export default function Tags(name) {
             }}}
           />
         )}
-      />
+      /> */}
     </div>
   );
 }

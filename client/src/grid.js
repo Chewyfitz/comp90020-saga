@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.text.secondary,
   },
   width: {
-    height: 200,
+    height: 350,
     padding: theme.spacing(2),
     textAlign: 'center',
     color: theme.palette.text.secondary,
@@ -30,39 +30,45 @@ const useStyles = makeStyles((theme) => ({
 
 export default function AutoGrid() {
   const classes = useStyles();
-  var flights_obj ={
-    "type": "No Flights Selected",
+  var flightsDeparting_obj ={
+    "type": "No Departing Flights Selected",
+    "date": "",
+    "price": 0,
+  }
+  var flightsReturning_obj ={
+    "type": "No Returning Flights Selected",
     "date": "",
     "price": 0,
   }
   var accom_obj ={
-    "type": "No Accommodation Selected",
-    "date": "",
-    "price": 0,
-  }
-  var trans_obj ={
-    "type": "No Transport Selected",
+    "type": "No Accomodation Selected",
     "date": "",
     "price": 0,
   }
 
-  var [isOpen1, setIsOpen1] = React.useState(flights_obj);
-  var [isOpen2, setIsOpen2] = React.useState(accom_obj);
-  var [isOpen3, setIsOpen3] = React.useState(trans_obj);
+  var [isOpen1, setIsOpen1] = React.useState(flightsDeparting_obj);
+  var [isOpen2, setIsOpen2] = React.useState(flightsReturning_obj);
+  var [isOpen3, setIsOpen3] = React.useState(accom_obj);
   
-  
-
   const sendDataToParent = (index,type) => { // the callback. Use a better name
-    console.log("WE DID IT");
-    console.log(index);
+    
+    
     switch(type){
-      case "Flights":
-        flights_obj = {
+      case "Flights Departing":
+        flightsDeparting_obj = {
           "type": index["type"],
           "date": index["date"],
           "price": index["price"],
         }
-        setIsOpen1(flights_obj)
+        setIsOpen1(flightsDeparting_obj)
+        break
+      case "Flights Returning":
+        flightsReturning_obj = {
+          "type": index["type"],
+          "date": index["date"],
+          "price": index["price"],
+        }
+        setIsOpen2(flightsReturning_obj)
         break
       case "Accommodation":
         accom_obj = {
@@ -70,54 +76,61 @@ export default function AutoGrid() {
           "date": index["date"],
           "price": index["price"],
         }
-        setIsOpen2(accom_obj)
-        break
-      case "Transport":
-        trans_obj = {
-          "type": index["type"],
-          "date": index["date"],
-          "price": index["price"],
-        }
-        setIsOpen3(trans_obj)
+        setIsOpen3(accom_obj)
         break
     }
     
   };
 
+
+  var [fromFilter, setFromFilter] = React.useState();
+  var [toFilter, setToFilter] = React.useState();
+
+  const updateFrom = (input) => {
+    setFromFilter(input);
+    
+  }
+  const updateTo = (input) => {
+    setToFilter(input);
+    
+  }
+  // var [fromFilter, setFromFilter] = React.useState();
+  // var [fromFilter, setFromFilter] = React.useState();
   
   return (
     <div className={classes.root}>
       <div className="container" style={{display:"flex"}}>
       <Box m={1} pt={1} pl={5}>
-        <Tags name="Leaving From"/> 
+        <Tags name={fromFilter} onChange={updateFrom}/> 
         </Box>
         <Box m={1} pt={1} l={5}>
-        <Tags name="Going To"/> 
+        <Tags name={toFilter} onChange={updateTo}/> 
         </Box>
       </div>
       <div className="container" style={{display:"flex"}}>
       <Box m={1} pt={1} pl={5}>
-        <Tags name="Departing"/>  
+        <Tags name="Departing" onChange={updateFrom}/> 
         </Box>
         <Box m={1} pt={1} l={5}>
-        <Tags name="Returning"/> 
+        <Tags name="Returning" onChange={updateTo}/> 
         </Box>
       </div>
       <Grid container spacing={3}>
         <Grid item xs>
-        <Paper className={classes.paper}><p>Flights</p><DenseHeightGrid type="Flights" sendDataToParent={sendDataToParent} /></Paper>
+        <Paper className={classes.paper}><p>Flights Departing</p><DenseHeightGrid type="Flights Departing" sendDataToParent={sendDataToParent} filter={fromFilter} /></Paper>
         </Grid>
         <Grid item xs>
-          <Paper className={classes.paper}><p>Accommodation</p><DenseHeightGrid type="Accommodation" sendDataToParent={sendDataToParent}/></Paper>
+          <Paper className={classes.paper}><p>Flights Returning</p><DenseHeightGrid type="Flights Returning" sendDataToParent={sendDataToParent} filter={toFilter}/></Paper>
           
         </Grid>
         <Grid item xs>
-        <Paper className={classes.paper}><p>Transport</p> <DenseHeightGrid type="Transport" sendDataToParent={sendDataToParent}/></Paper>
+        <Paper className={classes.paper}><p>Accommodation</p> <DenseHeightGrid type="Accommodation" sendDataToParent={sendDataToParent}/></Paper>
         </Grid>
       </Grid>
       <Grid item xs={12}>
           <Paper className={classes.width}>Summary<SpanningTable flightsData={isOpen1} accomData={isOpen2} transData={isOpen3} /></Paper>
       </Grid>
+
 
     </div>
   );

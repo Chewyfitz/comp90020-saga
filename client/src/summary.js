@@ -8,24 +8,31 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 
+import PopUp from "./Popup"; 
+
+// import Button from '@material-ui/core/Button';
+import SearchPage from "./SearchPage";
+
+// import Overlay from 'react-bootstrap/Overlay'
+// import Popover from 'react-bootstrap/Popover'
+// import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
+import { Header, Button, Popup, Grid } from 'semantic-ui-react'
 const TAX_RATE = 0.07;
+
 
 const useStyles = makeStyles({
   table: {
     minWidth: 700,
+    
   },
 });
 
 function ccyFormat(num) {
-  console.log(num);
+  
   if(num == ""){
     return "";
   }
   return `${num.toFixed(2)}`;
-}
-
-function priceRow(qty, unit) {
-  return qty * unit;
 }
 
 function createRow(desc, qty, unit) {
@@ -43,18 +50,18 @@ var rows = [
   createRow('Waste Basket', 2, 17.99),
 ];
 
-var invoiceSubtotal = subtotal(rows);
-var invoiceTaxes = TAX_RATE * invoiceSubtotal;
-var invoiceTotal = invoiceTaxes + invoiceSubtotal;
+var invoiceTotal = subtotal(rows);
 
 export default function SpanningTable(all_data) {
   const classes = useStyles();
 
-  console.log("HERER")
-  console.log(all_data)
+  
+  
   const [fetchResponse, setFetchResponse] = React.useState();
 
   React.useEffect(() => {
+    console.log("WHY IS THIS TRIG2");
+    console.log(all_data);
     var flightsData = all_data["flightsData"];
     var accomData = all_data["accomData"];
     var transData = all_data["transData"];
@@ -63,16 +70,29 @@ export default function SpanningTable(all_data) {
       createRow("b" + accomData["type"], accomData["date"], accomData["price"]),
       createRow("c" + transData["type"], transData["date"], transData["price"]),
     ];
-    invoiceSubtotal = subtotal(rows);
-    invoiceTaxes = TAX_RATE * invoiceSubtotal;
-    invoiceTotal = invoiceTaxes + invoiceSubtotal;
+    invoiceTotal = subtotal(rows);
     setFetchResponse(rows)
+    
   },[all_data])
   if(fetchResponse){
-    console.log("IMH HERERE")
-    console.log(fetchResponse);
     rows = fetchResponse;
   }
+  // const popover = (
+  //   <Popover id="popover-basic">
+  //     <Popover.Title as="h3">Popover right</Popover.Title>
+  //     <Popover.Content>
+  //       And here's some <strong>amazing</strong> content. It's very engaging.
+  //       right?
+  //     </Popover.Content>
+  //   </Popover>
+  // );
+  const [state, setState] = React.useState(false);
+ 
+  const togglePop = () => {
+    setState(!state);
+    console.log(state);
+  };
+
 
   return (
     <TableContainer component={Paper}>
@@ -112,20 +132,30 @@ export default function SpanningTable(all_data) {
             </TableRow>
           <TableRow>
             <TableCell rowSpan={3} />
-            <TableCell colSpan={2}>Subtotal</TableCell>
-            <TableCell align="right">{ccyFormat(invoiceSubtotal)}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Tax</TableCell>
-            <TableCell align="right">{`${(TAX_RATE * 100).toFixed(0)} %`}</TableCell>
-            <TableCell align="right">{ccyFormat(invoiceTaxes)}</TableCell>
-          </TableRow>
-          <TableRow>
             <TableCell colSpan={2}>Total</TableCell>
             <TableCell align="right">{ccyFormat(invoiceTotal)}</TableCell>
           </TableRow>
+          <TableRow>
+            <TableCell rowSpan={3} />
+            <TableCell colSpan={2} align="right">    
+          <div>
+              <div className="btn" onClick={togglePop}>
+                <button>Checkout</button>
+              </div>
+          </div>
+
+            </TableCell>
+          </TableRow>
         </TableBody>
       </Table>
+      
+      {state ? <PopUp toggle={togglePop} rows={rows} /> : null}
+      
     </TableContainer>
+
+    
+    
+    
   );
+  
 }
