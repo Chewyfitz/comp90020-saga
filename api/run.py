@@ -173,7 +173,10 @@ def saga(trip):
 
         #Payment will always be present
         addLog(trip,'paymentStart')
-        paymentBook(trip)
+        result = paymentBook(trip)
+        if not result:
+            compensateSaga(trip)
+            return False
 
         addLog(trip, 'end')
 
