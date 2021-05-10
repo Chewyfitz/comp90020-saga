@@ -1,10 +1,10 @@
 {
-  "name": "flight",
+  "name": "hotel",
   "version": "0.0.0",
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "test": "SET DEBUG=flight:* & npm start"
+    "test": "SET DEBUG=hotel:* & npm start"
   },
   "dependencies": {
     "async-mutex": "^0.3.1",
@@ -12,7 +12,7 @@
     "cookie-parser": "~1.4.4",
     "cors": "^2.8.5",
     "debug": "~2.6.9",
-    "express": "^4.16.4",
+    "express": "~4.16.1",
     "morgan": "~1.9.1"
   }
 }

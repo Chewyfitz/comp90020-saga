@@ -13,7 +13,7 @@ axios.defaults.baseURL =
 router.get('/', (req, res) => {
   // if we don't have a query
   if (Object.keys(req.query).length === 0) {
-    axios.get("/flight_bookings/_all_docs")
+    axios.get("/hotel_bookings/_all_docs")
       .then((response) => {
         res.send(response.data);
       }).catch(e => console.log(e));
@@ -22,12 +22,18 @@ router.get('/', (req, res) => {
     var query = {}
     var skip = req.query.skip == null ? 0 : parseInt(req.query.skip);
     var limit = req.query.limit == null ? 25 : parseInt(req.query.limit);
-    if (req.query.flight != null) query.flight = req.query.flight;
+    if (req.query.hotel != null) query.hotel = req.query.hotel;
     if (req.query.user != null) query.user = req.query.user;
     if (req.query.status != null) query.status = req.query.status;
+    // use "start" and "finish" to check for overlap!
+    if (req.query.start != null && req.query.finish != null) {
+      // check overlap - https://stackoverflow.com/a/13513973
+      query.start = {"$lt": req.query.finish};
+      query.finish = {"$gt": req.query.start};
+    }
 
     // send query off
-    axios.post("/flight_bookings/_find", data = {"selector": query, "skip": skip, "limit": limit}
+    axios.post("/hotel_bookings/_find", data = {"selector": query, "skip": skip, "limit": limit}
       ).then((response) => {
         res.send(response.data.docs);
       }).catch(e => console.log(e));
@@ -49,37 +55,49 @@ router.get('/id', (req, res) => {
 router.put('/:id', (req, res) => {
   lock.runExclusive(() => {
     // validate fields
-    if (req.body.user == null || req.body.flight == null) {
-      return res.status(400)
-                .send({message:"bookings require user and flight fields"});
+    if (req.body.user == null || req.body.hotel == null 
+        || req.body.start == null || req.body.finish == null) {
+      return res.status(400).send({
+        message:"bookings require user, hotel, start and finish fields"
+      });
     }
 
-    // fields include: booked by, booked flight[, booking status = (active/cancelled)]
     var id = req.params.id;
-    var flight = req.body.flight;
+    var hotel = req.body.hotel;
+    var start = req.body.start;   // customer moves in on this day
+    var finish = req.body.finish; // customer moves out on this day (someone can then move in on the same day)
     var user = req.body.user;
 
-    // check the flight is valid
+    // check the hotel is valid
     axios
-      .get("/flights/" + flight)
+      .get("/hotels/" + hotel)
       .then(() => {
-        // check whether item is booked in an active booking with a diff id
+        // check whether hotel is booked in an active booking with a diff id
+        var selector =  {
+          hotel: hotel, 
+          status: "active", 
+          "$not": {_id : id },
+          // check overlap - https://stackoverflow.com/a/13513973
+          start: {"$lt": finish},
+          finish: {"$gt": start}
+        };
         axios
-          .post("/flight_bookings/_find", data={selector: {flight: flight, status: "active", "$not":{_id : id}}, })
+          .post("/hotel_bookings/_find", data={selector: selector})
           .then(response => {
             //  - if booked return fail status
             if (response.data.docs.length > 0) {
-              res.send({ok:false, message:"that flight is already booked"})
+              res.send({ok:false, message:"that hotel is already booked"})
             //  - otherwise create booking
             } else {
               axios
-                .put("flight_bookings/" + id, data={
-                  flight: flight,
+                .put("hotel_bookings/" + id, data={
+                  hotel: hotel,
+                  start: start,
+                  finish: finish,
                   user: user,
                   status: "active"
                 })
                 .then(response => {
-                  console.log("booking sent");
                   res.send(response.data);
                 })
                 .catch(e => {
@@ -96,7 +114,7 @@ router.put('/:id', (req, res) => {
       })
       .catch(e => {
         if (e.response.status === 404) {
-          res.status(404).send({message:"flight not found - please use a valid flight id"});
+          res.status(404).send({message:"hotel not found - please use a valid hotel id"});
         } else {
           console.log(e);
         }
@@ -111,11 +129,11 @@ router.delete('/:id', (req, res) => {
     var id = req.params.id;
     // fetch the booking to make sure it exists
     axios
-      .get('/flight_bookings/' + id)
+      .get('/hotel_bookings/' + id)
       .then(response => {
         response.data.status = "cancelled";
         axios
-          .put("flight_bookings/" + id, data=response.data)
+          .put("hotel_bookings/" + id, data=response.data)
           .then(response => {
             res.send(response.data);
           })

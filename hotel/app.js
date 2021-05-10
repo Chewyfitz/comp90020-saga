@@ -6,7 +6,7 @@ var logger = require('morgan');
 var cors = require("cors");
 
 var indexRouter = require('./routes/index');
-var flightsRouter = require('./routes/flights');
+var flightsRouter = require('./routes/hotels');
 var bookingsRouter = require('./routes/bookings');
 
 var app = express();
@@ -24,9 +24,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-
 app.use('/', indexRouter);
-app.use('/flights', flightsRouter);
+app.use('/hotels', flightsRouter);
 app.use('/bookings', bookingsRouter);
 
 module.exports = app;

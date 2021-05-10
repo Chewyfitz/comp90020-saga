@@ -12,13 +12,15 @@ services:
       - front-end
       - hotel
       - payment
-
+      
   front-end:
-    build: ./front-end
+    build: ./client
     ports:
       - "8080:5000"
-    volumes:
-      - ./front-end:/code
+    # volumes:
+    #   - ./client:/code
+    environment:
+      - PORT=5000
 
   flight:
     build: ./flight
@@ -40,13 +42,16 @@ services:
       - ./hotel:/code
     links:
       - couch
+    environment:
+      - DATABASE=couch
+      - PORT=5000
 
   payment:
     build: ./payment
     ports:
       - "5003:5000"
     volumes:
-      - ./front-end:/code
+      - ./payment:/code
     links:
       - couch
 
