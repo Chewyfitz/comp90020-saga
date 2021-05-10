@@ -46,6 +46,7 @@ export default function AutoGrid() {
   var accom_obj ={
     "type": "No Accomodation Selected",
     "date": "",
+    "returnDate": "",
     "price": 0,
   }
 
@@ -77,6 +78,7 @@ export default function AutoGrid() {
         accom_obj = {
           "type": index["type"],
           "date": index["date"],
+          "returnDate": index["returnDate"],
           "price": index["price"],
         }
         setIsOpen3(accom_obj)
@@ -125,7 +127,7 @@ export default function AutoGrid() {
           
         </Grid>
         <Grid item xs>
-        <Paper className={classes.paper}><p>Accommodation</p> <DenseHeightGrid type="Accommodation" sendDataToParent={sendDataToParent} to={toFilter}/></Paper>
+        <Paper className={classes.paper}><p>Accommodation</p> <DenseHeightGrid type="Accommodation" sendDataToParent={sendDataToParent}  to={toFilter} date={dateFromFilter} dateReturn={dateToFilter}/></Paper>
         </Grid>
       </Grid>
       <Grid item xs={12}>

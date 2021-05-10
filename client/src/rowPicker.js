@@ -1,14 +1,10 @@
 import * as React from 'react';
 import { DataGrid } from '@material-ui/data-grid';
 
-// import Button from '@material-ui/core/Button';
+
 
 export default function DenseHeightGrid(props) {
-  // const { data } = useDemoData({
-  //   dataSet: 'Commodity',
-  //   rowLength: 100,
-  //   maxColumns: 6,
-  // });
+
   
   var type = props.type;
   var sendDataToParent = props.sendDataToParent;
@@ -48,6 +44,7 @@ export default function DenseHeightGrid(props) {
       .then(data => setFetchResponse(data));
     }
   },[from,to,date])
+
   var data = {
     columns:[{field: "id", hide: true},
              {field: "type", headerName: type, width: 130},
@@ -65,7 +62,7 @@ export default function DenseHeightGrid(props) {
         var tmp = {id:fetchResponse[i]["_id"] ,type:fetchResponse[i]["flight_num"] ,date:fetchResponse[i]["departure"],price:fetchResponse[i]["price"]};
       }
       else{
-        var tmp = {id:fetchResponse[i]["_id"] ,type:fetchResponse[i]["location"] ,date:"1/1/1",price:fetchResponse[i]["price"]};
+        var tmp = {id:fetchResponse[i]["_id"] ,type:fetchResponse[i]["location"] ,date:props.date,returnDate:props.dateReturn,price:fetchResponse[i]["price"]};
       }
       all_data[fetchResponse[i]["_id"]] = tmp;
       data.rows.push(tmp);

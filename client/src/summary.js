@@ -24,9 +24,9 @@ function ccyFormat(num) {
   return `${num.toFixed(2)}`;
 }
 
-function createRow(desc, qty, unit) {
-  const price = unit;
-  return { desc, qty, unit, price };
+function createRow(desc, date, returnDate,price) {
+  
+  return { desc, date, returnDate, price };
 }
 
 function subtotal(items) {
@@ -34,9 +34,9 @@ function subtotal(items) {
 }
 
 var rows = [
-  createRow('A', 100, 1.15),
-  createRow('B', 10, 45.99),
-  createRow('C', 2, 17.99),
+  createRow('A', 100, 1.15,2),
+  createRow('B', 10, 45.99,2),
+  createRow('C', 2, 17.99,2),
 ];
 
 var invoiceTotal = subtotal(rows);
@@ -50,13 +50,14 @@ export default function SpanningTable(all_data) {
     var accomData = all_data["accomData"];
     var transData = all_data["transData"];
     rows = [
-      createRow(flightsData["type"], flightsData["date"], flightsData["price"]),
-      createRow(accomData["type"], accomData["date"], accomData["price"]),
-      createRow(transData["type"], transData["date"], transData["price"]),
+      createRow(flightsData["type"], flightsData["date"],"-", flightsData["price"]),
+      createRow(accomData["type"], accomData["date"], "-",accomData["price"]),
+      createRow(transData["type"], transData["date"],transData["returnDate"], transData["price"]),
     ];
     invoiceTotal = subtotal(rows);
     setFetchResponse(rows)
-    
+    console.log("ROWS");
+    console.log(rows);
   },[all_data])
   if(fetchResponse){
     rows = fetchResponse;
@@ -75,27 +76,27 @@ export default function SpanningTable(all_data) {
           <TableRow>
             <TableCell>Description</TableCell>
             <TableCell align="right">Date</TableCell>
-            <TableCell align="right">Cost</TableCell>
+            <TableCell align="right">Return Date</TableCell>
             <TableCell align="right">Price</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           <TableRow key={rows[0].desc}>
               <TableCell>{rows[0].desc}</TableCell>
-              <TableCell align="right">{rows[0].qty}</TableCell>
-              <TableCell align="right">{rows[0].unit}</TableCell>
+              <TableCell align="right">{rows[0].date}</TableCell>
+              <TableCell align="right">{rows[0].returnDate}</TableCell>
               <TableCell align="right">{ccyFormat(rows[0].price)}</TableCell>
             </TableRow>
           <TableRow key={rows[1].desc}>
               <TableCell>{rows[1].desc}</TableCell>
-              <TableCell align="right">{rows[1].qty}</TableCell>
-              <TableCell align="right">{rows[1].unit}</TableCell>
+              <TableCell align="right">{rows[1].date}</TableCell>
+              <TableCell align="right">{rows[1].returnDate}</TableCell>
               <TableCell align="right">{ccyFormat(rows[1].price)}</TableCell>
           </TableRow>
           <TableRow key={rows[2].desc}>
               <TableCell>{rows[2].desc}</TableCell>
-              <TableCell align="right">{rows[2].qty}</TableCell>
-              <TableCell align="right">{rows[2].unit}</TableCell>
+              <TableCell align="right">{rows[2].date}</TableCell>
+              <TableCell align="right">{rows[2].returnDate}</TableCell>
               <TableCell align="right">{ccyFormat(rows[2].price)}</TableCell>
             </TableRow>
           <TableRow>
