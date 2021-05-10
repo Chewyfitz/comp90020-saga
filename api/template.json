@@ -1,0 +1,29 @@
+{
+    "tripID": "1234", 
+    "departFlight": {
+        "id": "asdf", 
+        "user": "conor",
+        "flight": "aasdf"
+    }, 
+    "returnFlight": {
+        "id": "asdf", 
+        "user": "conor",
+        "flight": "aasdf"
+    }, 
+    "hotel": {
+        "bookingid": "asdf",
+        "name": "conor",
+        "hotelid": "asdf",
+        "start": "date",
+        "end": "date"
+    },
+    "payment": {
+        "source": "id of account money is coming from",
+        "destinations": [
+            {"destinationid": "account id",
+             "amount": 10},
+            {"destinationid": "account id",
+             "amount": 10} 
+        ]
+    }
+}
