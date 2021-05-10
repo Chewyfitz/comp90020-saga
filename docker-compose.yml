@@ -28,6 +28,7 @@ services:
       - "5001:5000"
     volumes:
       - ./flight:/code
+      - /code/node_modules
     links:
       - couch
     environment:
@@ -40,6 +41,7 @@ services:
       - "5002:5000"
     volumes:
       - ./hotel:/code
+      - /code/node_modules
     links:
       - couch
     environment:

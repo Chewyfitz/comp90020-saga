@@ -1,8 +1,8 @@
 FROM node:14
-WORKDIR /code/hotels
+WORKDIR /code
 
 # add and install dependencies
-COPY package*.json ./
+COPY package*.json .
 RUN npm install
 
 # add app code
