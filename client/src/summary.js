@@ -18,7 +18,7 @@ const useStyles = makeStyles({
 
 function ccyFormat(num) {
   
-  if(num == ""){
+  if(num === ""){
     return "";
   }
   return `${num.toFixed(2)}`;
@@ -55,9 +55,8 @@ export default function SpanningTable(all_data) {
       createRow(transData["type"], transData["date"],transData["returnDate"], transData["price"]),
     ];
     invoiceTotal = subtotal(rows);
-    setFetchResponse(rows)
-    console.log("ROWS");
-    console.log(rows);
+    setFetchResponse(rows);
+  
   },[all_data])
   if(fetchResponse){
     rows = fetchResponse;
@@ -107,7 +106,7 @@ export default function SpanningTable(all_data) {
           <TableRow>
             <TableCell rowSpan={3} />
             <TableCell colSpan={2} align="right">    
-            <TransitionsModal allData={rows}/>
+            <TransitionsModal allData={all_data}/>
             </TableCell>
           </TableRow>
         </TableBody>

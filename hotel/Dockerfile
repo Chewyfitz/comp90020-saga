@@ -2,11 +2,11 @@ FROM node:14
 WORKDIR /code
 
 # add and install dependencies
-COPY package*.json .
+COPY package*.json ./
 RUN npm install
 
 # add app code
-COPY . .
+COPY . ./
 
 # run
 CMD npm start

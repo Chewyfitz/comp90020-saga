@@ -22,6 +22,10 @@ import Paper from '@material-ui/core/Paper';
 
 import Button from '@material-ui/core/Button';
 
+import { Alert, AlertTitle } from '@material-ui/lab';
+
+import { v4 as uuidv4 } from 'uuid';
+
 const useStyles = makeStyles((theme) => ({
   modal: {
     display: 'flex',
@@ -55,9 +59,89 @@ export default function TransitionsModal(props) {
 
   const handleClose = () => {
     setOpen(false);
+    setFetchResponse(null);
   };
+
   
+const [fetchResponse, setFetchResponse] = React.useState();
+const [clicked, setClicked] = React.useState();
+const [firstTime, setFirstTime] = React.useState(true);
+
+
+
+  React.useEffect(() => {
+    if(!firstTime){
+      console.log("SEDNING BOOKING");
+      var totalCost = 0;
+      var jsonBody = {};
+      jsonBody["tripID"] = uuidv4();
+  
+      if(allData["flightsData"]["price"] >0){
+        jsonBody["departFlight"] = {};
+        jsonBody["departFlight"]["id"]= uuidv4().replace("-", "");
+        jsonBody["departFlight"]["user"] = accountID;
+        jsonBody["departFlight"]["flight"] = allData["flightsData"]["id"];
+        totalCost = totalCost+allData["flightsData"]["price"]
+      }
+  
+  
+      if(allData["accomData"]["price"] >0){
+        jsonBody["returnFlight"] = {};
+        jsonBody["returnFlight"]["id"]= uuidv4().replace("-", "");
+        jsonBody["returnFlight"]["user"] = accountID;
+        jsonBody["returnFlight"]["flight"] = allData["accomData"]["id"];
+        totalCost = totalCost+allData["accomData"]["price"]
+      }
+  
+  
+      if(allData["transData"]["price"] >0){
+        jsonBody["hotel"] = {};
+        jsonBody["hotel"]["bookingid"]= uuidv4().replace("-", "");
+        jsonBody["hotel"]["name"] = accountID;
+  
+        jsonBody["hotel"]["hotelid"] = allData["transData"]["id"];
+        jsonBody["hotel"]["start"] = allData["transData"]["date"];
+        jsonBody["hotel"]["finish"] = allData["transData"]["returnDate"];
+        totalCost = totalCost+allData["transData"]["price"]
+      }
+  
+      jsonBody["payment"] = {};
+      jsonBody["payment"]["source"] = accountID;
+      jsonBody["payment"]["destinations"] = [{
+        "destinationid": destinationAccountID,
+        "amount": totalCost
+      }]
+      
+      fetch("http://127.0.0.1:5000" ,{
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(jsonBody)
+      })
+      .then(response => response.json())
+      .then(data => setFetchResponse(data));
+    }
+    else{
+      console.log("First time rendering so dont send booking ");
+      setFirstTime(false);
+    }
+  },[clicked])
+
+
+
+  const submitBooking = (accountID,destinationAccountID,allData) => {
+    setClicked(uuidv4());    
+}
+if(fetchResponse){
+  console.log("Modal fetch response");
+  console.log(fetchResponse);
+  
+}
+  
+
   const [accountID, setAccountID] = React.useState();
+  const [destinationAccountID, setDestinationAccountID] = React.useState();
   const [departingDate, setDepartingDate] = React.useState("None");
   const [departingDesc, setDepartingDesc] = React.useState("None Selected");
   const [departingPrice, setDepartingPrice] = React.useState("None");
@@ -75,41 +159,39 @@ export default function TransitionsModal(props) {
   React.useEffect(() => {
     
     
-    setDepartingDate(allData[0]["date"]);
-    setDepartingDesc(allData[0]["desc"]);
+    setDepartingDate(allData["flightsData"]["date"]);
+    setDepartingDesc(allData["flightsData"]["type"]);
     
-    setReturningDate(allData[1]["date"]);
-    setReturningDesc(allData[1]["desc"]);
+    setReturningDate(allData["accomData"]["date"]);
+    setReturningDesc(allData["accomData"]["type"]);
   
-    setAccomDesc(allData[2]["desc"]);
-    setAccomStartDate(allData[2]["date"]);
-    setAccomReturnDate(allData[2]["returnDate"]);
+    setAccomDesc(allData["transData"]["type"]);
+    setAccomStartDate(allData["transData"]["date"]);
+    setAccomReturnDate(allData["transData"]["returnDate"]);
   
-    if(allData[0]["price"] === 0){
+    if(allData["flightsData"]["price"] === 0){
       setDepartingPrice("");
     }
     else{
-      setDepartingPrice(allData[0]["price"]);
+      setDepartingPrice("$" + allData["flightsData"]["price"]);
     }
 
-    if(allData[1]["price"] === 0){
+    if(allData["accomData"]["price"] === 0){
       setReturningPrice("");
     }
     else{
-      setReturningPrice(allData[1]["price"]);
+      setReturningPrice("$"+allData["accomData"]["price"]);
     }
-    if(allData[2]["price"] === 0){
+    if(allData["transData"]["price"] === 0){
       setAccomPrice("");
     }
     else{
-      setAccomPrice(allData[2]["price"]);
+      setAccomPrice("$"+allData["transData"]["price"]);
     }
   
-    setTotal(allData[0]["price"] + allData[1]["price"] + allData[2]["price"])
-    console.log("YIPE");
-    console.log(allData);
+    setTotal("$" +(allData["flightsData"]["price"] + allData["accomData"]["price"] + allData["transData"]["price"]))
 
-  },[allData])
+  },[allData])  
 
   return (
     <div>
@@ -127,14 +209,15 @@ export default function TransitionsModal(props) {
         BackdropProps={{
           timeout: 500,
         }}
-        
       >
         <Fade in={open}>
           <div className={classes.paper} >
             <h2 id="transition-modal-title">Summary</h2>
+            Enter an Account Id to make booking from: <TextField id="outlined-basica" label="Account ID" variant="outlined" value={accountID} onChange={(e) => setAccountID(e.target.value)}/>
+            <Box m={3}> </Box>
+            Enter an Destination Account Id to make booking from: <TextField id="outlined-basic" label="Destination Account ID" variant="outlined" value={destinationAccountID} onChange={(e) => setDestinationAccountID(e.target.value)}/>
+
             <p id="transition-modal-description">
-                Enter an Account Id to make booking from: 
-                <TextField id="outlined-basic" label="Account ID" variant="outlined" value={accountID} onChange={(e) => setAccountID(e.target.value)}/>
                 <Box m={3}> </Box>
                 <TableContainer component={Paper}>
                 <Table className={classes.table} size="small" aria-label="a dense table">
@@ -199,10 +282,24 @@ export default function TransitionsModal(props) {
                 </Table>
               </TableContainer>
               <Box m={3}> </Box>
-              total = {total}
-              <Button variant="contained" color="primary" disabled={ accountID == null || accountID == ""}>
+              total = {total}    
+              <Button onClick={() => {submitBooking(accountID,destinationAccountID,allData)}} variant="contained" color="primary" disabled={ accountID == null || accountID == "" ||destinationAccountID == null || destinationAccountID == ""}>
                 Book
               </Button>
+              <Box m={3}> </Box>
+              {fetchResponse && fetchResponse["ok"]===false && <Alert severity="error">
+                <AlertTitle>Error</AlertTitle>
+                There was an error making your booking — <strong>Ensure details are correct</strong>
+              </Alert>}
+              {!fetchResponse && <Alert severity="info">
+                <AlertTitle>Info</AlertTitle>
+                No Booking Made Yet
+              </Alert>}
+              {fetchResponse &&  fetchResponse["ok"]===true && <Alert severity="success">
+                <AlertTitle>Success</AlertTitle>
+                <strong>Booking Successfully Completed!</strong>
+              </Alert>}
+
             </p>
           </div>
         </Fade>

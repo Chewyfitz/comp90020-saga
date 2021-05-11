@@ -1,10 +1,7 @@
 import * as React from 'react';
 import { DataGrid } from '@material-ui/data-grid';
 
-
-
 export default function DenseHeightGrid(props) {
-
   
   var type = props.type;
   var sendDataToParent = props.sendDataToParent;
@@ -47,7 +44,8 @@ export default function DenseHeightGrid(props) {
 
   var data = {
     columns:[{field: "id", hide: true},
-             {field: "type", headerName: type, width: 130},
+    
+             {field: "type", headerName: type, width: 170},
              {field: "date", headerName: "Date", width: 100},
              {field: "price", headerName: "Price", width: 100},],
     rows:[]

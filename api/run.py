@@ -1,9 +1,15 @@
 from flask import Flask, request
 from flask_restful import Api, Resource
 import json
+import requests
+from flask_cors import CORS
+import sys, os
 
 app = Flask(__name__)
+CORS(app)
 api = Api(app)
+
+
 
 '''
 Cases to worry about:
@@ -29,15 +35,25 @@ def addLog(trip, key, msg=True):
 
 def departflightsBook(trip):
     flight = trip['departFlight']
+    
     try:
+    
+    
         response = requests.put(FLIGHT_URL + 'bookings/' + flight['id'], json={"user": flight['user'], "flight": flight['flight']})
+        
+    
         result = response.json()['ok']
-    except:
+    
+    except Exception as e:
+        
         result = False
+    
     if result:
+        
         addLog(trip,'departflightsEnd')
         return True
     else:
+        
         addLog(trip, 'departflightsAbort')
         return False
 
@@ -58,9 +74,9 @@ def returnflightsBook(trip):
 def hotelBook(trip):
     hotel = trip['hotel']
     try:
-        response = requests.put(HOTEL_URL + 'bookings/' + hotel['bookingid'], json={"user": hotel['name'], "hotel": hotel['hotelid'], "start": hotel['start'], "end": hotel['end']})
+        response = requests.put(HOTEL_URL + 'bookings/' + hotel['bookingid'], json={"user": hotel['name'], "hotel": hotel['hotelid'], "start": hotel['start'], "finish": hotel['finish']})
         result = response.json()['ok']
-    except:
+    except Exception as e:
         result = False
     if result:
         addLog(trip,'hotelEnd')
@@ -70,11 +86,31 @@ def hotelBook(trip):
         return False
 
 def paymentBook(trip):
+    
     payment = trip['payment']
+    
+    
+    jsonTmp = {"source": payment['source'], "destinations":[]}
+    
+    for each in payment['destinations']:
+    
+        jsonTmp["destinations"].append({"destinationid": each['destinationid'], "amount": each['amount'] })
+    
     try:
-        response = requests.post(PAYMENT_URL + 'transact/', json={"source": payment['source'], "destinations": {"destinationid": payment['destinations'][0]['destinationid'], "amount": payment['destinations'][0]['amount']}})
-        result = response.json()['ok']
-    except:
+        
+        response = requests.post(PAYMENT_URL + 'transact', json=jsonTmp)
+        #this means success?
+        print(response)
+        print(PAYMENT_URL + 'transact')
+        print(jsonTmp)
+        result = response.json()['0']["to"]
+        
+    except Exception as e:
+        
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        print(exc_type, fname, exc_tb.tb_lineno)
+        print(e)
         result = False
     if result:
         addLog(trip,'paymentEnd')
@@ -141,43 +177,43 @@ def compensateSaga(trip):
 def saga(trip):
         with open('api/log.json', 'r') as f:
             log = json.load(f)
-        
+        print(1)
         if trip['tripID'] not in log:
             log[trip['tripID']] = {'start': True}
             with open('api/log.json', 'w') as f:
                 json.dump(log, f)
-        
+        print(2)
         if 'end' in log[trip['tripID']]:
             return log[trip['tripID']]['end'] #True or False
-
+        print(3)
         if 'departFlight' in trip:
             addLog(trip,'departflightsStart')
             result = departflightsBook(trip)
             if not result:
                 compensateSaga(trip)
                 return False
-
+        print(4)
         if 'returnFlight' in trip:
             addLog(trip,'returnflightsStart')
             result = returnflightsBook(trip)
             if not result:
                 compensateSaga(trip)
                 return False
-
+        print(5)
         if 'hotel' in trip:
             addLog(trip,'hotelStart')
             result = hotelBook(trip)
             if not result:
                 compensateSaga(trip)
                 return False
-
+        print(6)
         #Payment will always be present
         addLog(trip,'paymentStart')
         result = paymentBook(trip)
         if not result:
             compensateSaga(trip)
             return False
-
+        print(7)
         addLog(trip, 'end')
 
         return True
