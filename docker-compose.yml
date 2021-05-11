@@ -12,6 +12,10 @@ services:
       - front-end
       - hotel
       - payment
+    environment:
+      - FLIGHT=flight
+      - HOTEL=hotel
+      - PAYMENT=payment
       
   front-end:
     build: ./client
