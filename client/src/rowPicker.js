@@ -31,7 +31,7 @@ export default function DenseHeightGrid(props) {
         params = params+date;
       }
 
-      fetch_string = "http://localhost:5001/flights" + (params.length>0?"?":"") + params
+      var fetch_string = "http://localhost:5001/flights" + (params.length>0?"?":"") + params
 
       console.log(fetch_string);
       fetch(fetch_string)
