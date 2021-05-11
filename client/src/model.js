@@ -72,7 +72,8 @@ const [firstTime, setFirstTime] = React.useState(true);
   React.useEffect(() => {
     if(!firstTime){
       console.log("SEDNING BOOKING");
-      var totalCost = 0;
+      var totalFlightCost = 0;
+      var totalHotelCost = 0;
       var jsonBody = {};
       jsonBody["tripID"] = uuidv4();
   
@@ -81,7 +82,7 @@ const [firstTime, setFirstTime] = React.useState(true);
         jsonBody["departFlight"]["id"]= uuidv4().replace("-", "");
         jsonBody["departFlight"]["user"] = accountID;
         jsonBody["departFlight"]["flight"] = allData["flightsData"]["id"];
-        totalCost = totalCost+allData["flightsData"]["price"]
+        totalFlightCost = totalFlightCost+allData["flightsData"]["price"]
       }
   
   
@@ -90,7 +91,7 @@ const [firstTime, setFirstTime] = React.useState(true);
         jsonBody["returnFlight"]["id"]= uuidv4().replace("-", "");
         jsonBody["returnFlight"]["user"] = accountID;
         jsonBody["returnFlight"]["flight"] = allData["accomData"]["id"];
-        totalCost = totalCost+allData["accomData"]["price"]
+        totalFlightCost = totalFlightCost+allData["accomData"]["price"]
       }
   
   
@@ -102,16 +103,26 @@ const [firstTime, setFirstTime] = React.useState(true);
         jsonBody["hotel"]["hotelid"] = allData["transData"]["id"];
         jsonBody["hotel"]["start"] = allData["transData"]["date"];
         jsonBody["hotel"]["finish"] = allData["transData"]["returnDate"];
-        totalCost = totalCost+allData["transData"]["price"]
+        totalHotelCost = totalHotelCost+allData["transData"]["price"]
       }
   
       jsonBody["payment"] = {};
       jsonBody["payment"]["source"] = accountID;
-      jsonBody["payment"]["destinations"] = [{
-        "destinationid": destinationAccountID,
-        "amount": totalCost
-      }]
+      jsonBody["payment"]["destinations"] = [];
       
+      if(allData["transData"]["price"] >0){
+        jsonBody["payment"]["destinations"].push({
+          "destinationid": "hotel",
+          "amount": totalHotelCost
+        });
+      }
+      if(allData["accomData"]["price"] >0 || allData["flightsData"]["price"] >0){
+        jsonBody["payment"]["destinations"].push(      {
+          "destinationid": "flight",
+          "amount": totalFlightCost
+        });
+      }
+
       fetch("http://127.0.0.1:5000" ,{
         method: 'POST',
         headers: {
@@ -215,7 +226,7 @@ if(fetchResponse){
             <h2 id="transition-modal-title">Summary</h2>
             Enter an Account Id to make booking from: <TextField id="outlined-basica" label="Account ID" variant="outlined" value={accountID} onChange={(e) => setAccountID(e.target.value)}/>
             <Box m={3}> </Box>
-            Enter an Destination Account Id to make booking from: <TextField id="outlined-basic" label="Destination Account ID" variant="outlined" value={destinationAccountID} onChange={(e) => setDestinationAccountID(e.target.value)}/>
+            {/* Enter an Destination Account Id to make booking from: <TextField id="outlined-basic" label="Destination Account ID" variant="outlined" value={destinationAccountID} onChange={(e) => setDestinationAccountID(e.target.value)}/> */}
 
             <p id="transition-modal-description">
                 <Box m={3}> </Box>
@@ -283,7 +294,8 @@ if(fetchResponse){
               </TableContainer>
               <Box m={3}> </Box>
               total = {total}    
-              <Button onClick={() => {submitBooking(accountID,destinationAccountID,allData)}} variant="contained" color="primary" disabled={ accountID == null || accountID == "" ||destinationAccountID == null || destinationAccountID == "" || (accomPrice > 0 && (accomStartDate == "" || accomReturnDate == "") )}>
+              {/* <Button onClick={() => {submitBooking(accountID,destinationAccountID,allData)}} variant="contained" color="primary" disabled={ accountID == null || accountID == "" ||destinationAccountID == null || destinationAccountID == "" || (accomPrice > 0 && (accomStartDate == "" || accomReturnDate == "") )}> */}
+              <Button onClick={() => {submitBooking(accountID,destinationAccountID,allData)}} variant="contained" color="primary" disabled={ accountID == null || accountID == "" || (accomPrice > 0 && (accomStartDate == "" || accomReturnDate == ""||accomStartDate == null || accomReturnDate == null ))}>
                 Book
               </Button>
               <Box m={3}> </Box>
