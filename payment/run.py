@@ -5,7 +5,10 @@ import requests
 from functions import create, deposit, withdraw, transfer, transact, init
 from global_config import root
 
+from flask_cors import CORS
+
 app = Flask(__name__)
+CORS(app)
 app.config["DEBUG"] = True
 
 # Dump the database

@@ -63,6 +63,7 @@ export default function AutoGrid() {
           "type": index["type"],
           "date": index["date"],
           "price": index["price"],
+          "id": index["id"]
         }
         setIsOpen1(flightsDeparting_obj)
         break
@@ -71,6 +72,8 @@ export default function AutoGrid() {
           "type": index["type"],
           "date": index["date"],
           "price": index["price"],
+          "id": index["id"]
+          
         }
         setIsOpen2(flightsReturning_obj)
         break
@@ -80,6 +83,7 @@ export default function AutoGrid() {
           "date": index["date"],
           "returnDate": index["returnDate"],
           "price": index["price"],
+          "id": index["id"]
         }
         setIsOpen3(accom_obj)
         break

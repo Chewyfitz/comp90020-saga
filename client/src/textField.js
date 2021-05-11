@@ -30,10 +30,10 @@ export default function BasicTextFields(props) {
   return (  
     
       <div>
-            <TextField id="outlined-basic" label="Leaving From" variant="outlined" value={fromFilter} onChange={(e) => setFrom(e.target.value)}/>
-            <TextField id="outlined-basic" label="Going To" variant="outlined" value={toFilter} onChange={(e) => setTo(e.target.value)}/>
-            <TextField id="outlined-basic" label="Departure" variant="outlined" value={dateFromFilter} onChange={(e) => setDateFrom(e.target.value)}/>
-            <TextField id="outlined-basic" label="Returning" variant="outlined" value={dateToFilter} onChange={(e) => setDateTo(e.target.value)}/>
+            <TextField id="outlined-basic1" label="Leaving From" variant="outlined" value={fromFilter} onChange={(e) => setFrom(e.target.value)}/>
+            <TextField id="outlined-basic2" label="Going To" variant="outlined" value={toFilter} onChange={(e) => setTo(e.target.value)}/>
+            <TextField id="outlined-basic3" label="Departure" variant="outlined" value={dateFromFilter} onChange={(e) => setDateFrom(e.target.value)}/>
+            <TextField id="outlined-basic4" label="Returning" variant="outlined" value={dateToFilter} onChange={(e) => setDateTo(e.target.value)}/>
             
             <Button variant="contained" color="primary" size="large" onClick={() => props.setFiltersFunction(fromFilter,toFilter,dateFromFilter,dateToFilter) }>
                 Search

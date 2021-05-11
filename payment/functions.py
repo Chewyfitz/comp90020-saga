@@ -111,7 +111,7 @@ def transact(source, destinations):
     # Get total withdrawal amount
     amount = 0
     for dest in destinations:
-        amount += dest['amount']
+        amount += int(dest['amount'])
 
     # Check that balance is sufficient before running transaction
     src, status = get_account(source)
@@ -124,7 +124,7 @@ def transact(source, destinations):
 
     # Perform transactions
     for i, dest in enumerate(destinations):
-        summary[i], _ = transfer(source, dest['dest'], dest['amount'])
+        summary[i], _ = transfer(source, dest['destinationid'], dest['amount'])
 
     # Not sure what to return here, maybe the summary of all accounts?
     # TODO: Figure out what to return here

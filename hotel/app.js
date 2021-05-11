@@ -13,7 +13,18 @@ var app = express();
 
 app.use(cors(
     {
-      origin: ["http://127.0.0.1:8080","http://127.0.0.1:3000","http://localhost:3000","http://localhost:8080"],
+      origin: [
+        "http://127.0.0.1:8080",
+        "http://127.0.0.1:3000",
+        "http://localhost:3000",
+        "http://localhost:8080",
+        "http://127.0.0.1:5000",
+        "http://localhost:5000",
+        "http://127.0.0.1:5001",
+        "http://localhost:5001",
+        "http://127.0.0.1:5003",
+        "http://localhost:5003"
+      ],
       methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE']
     }
   ));
