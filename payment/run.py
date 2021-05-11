@@ -11,6 +11,10 @@ app = Flask(__name__)
 CORS(app)
 app.config["DEBUG"] = True
 
+@app.before_first_request
+def before_first_request():
+  init()
+
 # Dump the database
 @app.route('/', methods=['GET'])
 def test():
@@ -148,7 +152,5 @@ def processTransaction():
         values = request.values
     response, status = transact(source=values['source'], destinations=values['destinations'])
     return response, status
-
-init()
 
 app.run()

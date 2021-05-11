@@ -1,9 +1,11 @@
 import requests
+import sys
 from global_config import root
 
 def init():
     create_accounts()
     create_transactions()
+    print("Init Done.", file=sys.stderr)
 
 ################################################################################
 #                               Utility Functions                              #
