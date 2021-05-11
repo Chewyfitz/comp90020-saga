@@ -283,7 +283,7 @@ if(fetchResponse){
               </TableContainer>
               <Box m={3}> </Box>
               total = {total}    
-              <Button onClick={() => {submitBooking(accountID,destinationAccountID,allData)}} variant="contained" color="primary" disabled={ accountID == null || accountID == "" ||destinationAccountID == null || destinationAccountID == ""}>
+              <Button onClick={() => {submitBooking(accountID,destinationAccountID,allData)}} variant="contained" color="primary" disabled={ accountID == null || accountID == "" ||destinationAccountID == null || destinationAccountID == "" || (accomPrice > 0 && (accomStartDate == "" || accomReturnDate == "") )}>
                 Book
               </Button>
               <Box m={3}> </Box>

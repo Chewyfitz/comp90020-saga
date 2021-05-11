@@ -116,7 +116,7 @@ def paymentBook(trip):
         #this means success?
         print(response)
         print(response.text)
-        print(response.json())
+        # print(response.json())
         
         print(PAYMENT_URL + 'transact')
         print(jsonTmp)
