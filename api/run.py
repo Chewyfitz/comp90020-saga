@@ -9,8 +9,8 @@ app = Flask(__name__)
 CORS(app)
 api = Api(app)
 
-
-
+# with open('api/log.json', 'w') as f:
+#     json.dump({}, f)
 '''
 Cases to worry about:
 -microservice fails
@@ -22,9 +22,16 @@ NOTE: currently using just a txt file as the SAGA log. This may cause issues. ma
 
 You can test this by running test.py while the SEC is up. Make sure the log.json only has {} in it. 
 '''
-FLIGHT_URL = "http://127.0.0.1:5001/"
-HOTEL_URL = "http://127.0.0.1:5002/"
-PAYMENT_URL = "http://127.0.0.1:5003/"
+
+flight = os.environ.get('FLIGHT') or "127.0.0.1"
+hotel = os.environ.get('HOTEL') or "127.0.0.1"
+payment = os.environ.get('PAYMENT') or "127.0.0.1"
+
+
+FLIGHT_URL = f"http://{flight}:5000/"
+HOTEL_URL = f"http://{hotel}:5000/"
+PAYMENT_URL = f"http://{payment}:5000/"
+
 
 def addLog(trip, key, msg=True):
     with open('api/log.json', 'r') as f:
@@ -37,15 +44,21 @@ def departflightsBook(trip):
     flight = trip['departFlight']
     
     try:
-    
-    
+        
+        
         response = requests.put(FLIGHT_URL + 'bookings/' + flight['id'], json={"user": flight['user'], "flight": flight['flight']})
-        
-    
+        print(response.text)
         result = response.json()['ok']
-    
+
     except Exception as e:
-        
+        print(FLIGHT_URL + 'bookings/' + flight['id'])
+        print({"user": flight['user'], "flight": flight['flight']})
+        print("JERJEJREREJEJEJRER")
+
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        print(exc_type, fname, exc_tb.tb_lineno)
+        print(e)
         result = False
     
     if result:
@@ -76,8 +89,11 @@ def hotelBook(trip):
     try:
         response = requests.put(HOTEL_URL + 'bookings/' + hotel['bookingid'], json={"user": hotel['name'], "hotel": hotel['hotelid'], "start": hotel['start'], "finish": hotel['finish']})
         result = response.json()['ok']
+        print( response.json())
     except Exception as e:
+        print(e)
         result = False
+    
     if result:
         addLog(trip,'hotelEnd')
         return True
@@ -88,19 +104,20 @@ def hotelBook(trip):
 def paymentBook(trip):
     
     payment = trip['payment']
-    
-    
     jsonTmp = {"source": payment['source'], "destinations":[]}
     
     for each in payment['destinations']:
     
-        jsonTmp["destinations"].append({"destinationid": each['destinationid'], "amount": each['amount'] })
+        jsonTmp["destinations"].append({"destinationid": each['destinationid'], "amount": int(each['amount']) })
     
     try:
-        
+        print(jsonTmp)
         response = requests.post(PAYMENT_URL + 'transact', json=jsonTmp)
         #this means success?
         print(response)
+        print(response.text)
+        print(response.json())
+        
         print(PAYMENT_URL + 'transact')
         print(jsonTmp)
         result = response.json()['0']["to"]
@@ -147,6 +164,7 @@ def hotelComp(trip):
     addLog(trip, 'hotelAbort')
 
 def paymentComp(trip):
+    print(trip)
     payment = trip['payment']
     try:
         response = requests.put(PAYMENT_URL + 'transfer/'+payment['destinations'][0]['destinationid']+'/'+payment['source'])
@@ -230,9 +248,10 @@ def logCheck():
 class SEC(Resource):
 
     def post(self):
+        
         trip = request.get_json()
         res = saga(trip)
-        return {'ok': res}
+        return {'ok': res}  
 
 api.add_resource(SEC, '/')
 
